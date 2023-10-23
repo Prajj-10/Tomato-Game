@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tomato_game/login_page.dart';
 
 import 'home_page.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(),
-        body: const HomePage(),
+        body: const LoginScreen(),
       ),
     );
   }

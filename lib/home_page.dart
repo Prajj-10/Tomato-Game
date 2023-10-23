@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tomato_game/model.dart';
+import 'package:tomato_game/API_Model/model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
-  List<QuestionAnswer> questionAnswer = [];
+  // List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState(){
@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("REST API Example"),
+        title: const Text("Tomato Game"),
       ),
       body: _isLoading
           ? const Center(
@@ -55,7 +55,8 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Image.network(
                   questionAns!.question,
-                  width: 100,
+                  width: 400,
+                  height: 500,
                 ),
                 Text(questionAns!.solution.toString()),
               ],
