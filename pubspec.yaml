@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  firebase_core:
+  firebase_auth:
   provider: ^6.0.2
   html: ^0.15.4
   http: ^1.1.0
