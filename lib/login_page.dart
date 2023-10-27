@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> const EmailPasswordSignup()));
               },
-              text: 'Email/Password Sign Up',
+              text: 'Sign Up with Email and Password',
             ),
             CustomButton(
               onTap: () {

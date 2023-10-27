@@ -12,6 +12,7 @@ class EmailPasswordSignup extends StatefulWidget {
 }
 
 class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -37,11 +38,19 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomTextField(
+              controller: nameController,
+              hintText: 'Enter your name',
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomTextField(
               controller: emailController,
               hintText: 'Enter your email',
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 20,),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomTextField(
