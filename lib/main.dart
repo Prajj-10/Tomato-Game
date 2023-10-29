@@ -20,10 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(),
-        body: const LoginScreen(),
+      title: 'Tomato Game',
+      theme: ThemeData(
+      primarySwatch: Colors.red,
       ),
+      debugShowCheckedModeBanner: false,
+      home: const LoginScreen(),
     );
   }
 }
