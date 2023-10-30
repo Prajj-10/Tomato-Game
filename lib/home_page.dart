@@ -1,8 +1,14 @@
 import 'dart:convert';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:tomato_game/API_Model/model.dart';
+import 'package:tomato_game/Custom_Widgets/custom_button.dart';
+import 'package:tomato_game/Custom_Widgets/custom_textfield.dart';
+
+import 'models/api_model.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +18,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final TextEditingController ansController = TextEditingController();
+
   bool _isLoading = true;
   // List<QuestionAnswer> questionAnswer = [];
 
@@ -38,33 +47,74 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Tomato Game"),
       ),
-      body: _isLoading
-          ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          : ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Padding(
+        padding: const EdgeInsets.all(36.0),
+        child: SingleChildScrollView(
+            child: Column(
               children: [
-                Image.network(
-                  questionAns!.question,
-                  width: 400,
-                  height: 500,
+                const SizedBox(height: 30,),
+                const Text("Enter the correct number: "),
+                const SizedBox(height: 20,),
+                Center(
+                  child: Image.network(
+                    questionAns!.question,
+                    width: 400,
+                    height: 500,
+                  ),
                 ),
-                Text(questionAns!.solution.toString()),
+                const SizedBox(height: 20,),
+                 Center(
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Enter a value"
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value){
+                      int? enteredValue = int.tryParse(value);
+                      if(enteredValue != null){
+                        ansController.text = enteredValue.toString();
+                      }
+                    },
+                    style: const TextStyle(fontSize: 15),
+                  )
+                ),
+                const SizedBox(height: 25,),
+                Center(
+                  child: CustomButton(
+                    onTap: () {
+                      checkAnswer();
+                      },
+                    text: 'Enter',
+
+                  ),
+                ),
               ],
-            ),
-          );
-        }
+    ),
+    ),
       ),
     );
+  }
+  void checkAnswer(){
+    int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
+    if(value == questionAns!.solution){
+      AnimatedSnackBar.material("Correct Answer",
+          type: AnimatedSnackBarType.success,
+          mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+      getData();
+      //Fluttertoast.showToast(msg: "Correct Answer");
+    }
+    else{
+      AnimatedSnackBar.material("Wrong Answer",
+          type: AnimatedSnackBarType.error,
+          mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+      // Fluttertoast.showToast(msg: "Wrong Answer");
+    }
   }
 
 

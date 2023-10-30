@@ -1,4 +1,8 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tomato_game/home_page.dart';
 
 import 'Custom_Widgets/custom_button.dart';
 import 'signup.dart';
@@ -15,6 +19,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
+
+  late bool passwordVisible;
+
+
+  // Firebase
+  final _auth = FirebaseAuth.instance;
+
+  @override
+  void initState(){
+    passwordVisible = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
     final passwordField = TextFormField(
         autofocus: false,
         controller: passwordController,
-        obscureText: true,
+        obscureText: !passwordVisible,
         validator: (value) {
           RegExp regex = RegExp(r'^.{6,}$');
           if (value!.isEmpty) {
             return ("Password is required for login");
           }
           if (!regex.hasMatch(value)) {
-            return ("Enter Valid Password(Min. 6 Character)");
+            return ("Password must be minimum 6 characters.");
           }
         },
         onSaved: (value) {
@@ -66,6 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.vpn_key),
+          suffixIcon: IconButton(onPressed: (){
+            setState(() {
+              passwordVisible = !passwordVisible;
+            });
+          },icon: Icon(passwordVisible?Icons.visibility:Icons.visibility_off),),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
           border: OutlineInputBorder(
@@ -103,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 25,),
                 CustomButton(
                   onTap: () {
-                    //Navigator.pushNamed(context, EmailPasswordLogin.routeName);
+                    signIn(emailController.text, passwordController.text);
                   },
                   text: 'Login',
                 ),
@@ -145,4 +165,24 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+  void signIn(String email, String password) async{
+    if(_formKey.currentState!.validate()){
+      await _auth.signInWithEmailAndPassword(email: email, password: password)
+          .then((uid) => {
+            AnimatedSnackBar.material("Login Successful",
+            type: AnimatedSnackBarType.success,
+            mobileSnackBarPosition: MobileSnackBarPosition.top).show(context),
+            //Fluttertoast.showToast(msg:"Login Successful"),
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> const HomePage()))
+      }).catchError((e){
+        AnimatedSnackBar.material(e!.message,
+            type: AnimatedSnackBarType.error,
+            mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+        // Fluttertoast.showToast(msg: e!.message);
+      });
+
+    }
+  }
 }
+
+// login function
