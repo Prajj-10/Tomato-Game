@@ -18,29 +18,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
+  late Future<QuestionAnswer?>? _futurequestion;
   final TextEditingController ansController = TextEditingController();
 
-  bool _isLoading = true;
-  // List<QuestionAnswer> questionAnswer = [];
+  // bool _isLoading = true;
+  // // List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState(){
     super.initState();
-    getData();
+    initfuture();
   }
-
+  initfuture(){
+    _futurequestion = getData();
+  }
   QuestionAnswer? questionAns;
-  getData() async{
+ Future<QuestionAnswer?> getData() async{
     try{
       String url = "https://marcconrad.com/uob/tomato/api.php";
       http.Response res = await http.get(Uri.parse(url));
       questionAns = QuestionAnswer.fromJson(json.decode(res.body));
-      _isLoading = false;
-      setState(() {});
+
+      return questionAns;
     }
     catch(e){
-      debugPrint(e.toString());
+      return null;
+    //  debugPrint(e.toString());
     }
   }
 
@@ -52,52 +55,72 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         title: const Text("Tomato Game"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(36.0),
-        child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 30,),
-                const Text("Enter the correct number: "),
-                const SizedBox(height: 20,),
-                Center(
-                  child: Image.network(
-                    questionAns!.question,
-                    width: 400,
-                    height: 500,
-                  ),
-                ),
-                const SizedBox(height: 20,),
-                 Center(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Enter a value"
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (value){
-                      int? enteredValue = int.tryParse(value);
-                      if(enteredValue != null){
-                        ansController.text = enteredValue.toString();
-                      }
-                    },
-                    style: const TextStyle(fontSize: 15),
-                  )
-                ),
-                const SizedBox(height: 25,),
-                Center(
-                  child: CustomButton(
-                    onTap: () {
-                      checkAnswer();
-                      },
-                    text: 'Enter',
+      body: //future builder
+      FutureBuilder<QuestionAnswer?>(
+          future:_futurequestion,
+          builder: (BuildContext context, AsyncSnapshot<QuestionAnswer?> snapshot){
+            switch (snapshot.connectionState){
+              case ConnectionState.none:
+                return Container(); // error//
+              case ConnectionState.waiting: //loading
+                return Center(child: Container(height: 20,width: 20,child: const Center(child: CircularProgressIndicator()),));
+              case ConnectionState.done:
+                if(snapshot.data==null){
+                  return Container(child: Text("No data"),);// no data
+                }else{
+                  //ui
+                  return Padding(
+                    padding: const EdgeInsets.all(36.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 30,),
+                          const Text("Enter the correct number: "),
+                          const SizedBox(height: 20,),
+                          Center(
+                            child: Image.network(
+                              questionAns!.question,
+                              width: 400,
+                              height: 500,
+                            ),
+                          ),
+                          const SizedBox(height: 20,),
+                          Center(
+                              child: TextField(
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: "Enter a value"
+                                ),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value){
+                                  int? enteredValue = int.tryParse(value);
+                                  if(enteredValue != null){
+                                    ansController.text = enteredValue.toString();
+                                  }
+                                },
+                                style: const TextStyle(fontSize: 15),
+                              )
+                          ),
+                          const SizedBox(height: 25,),
+                          Center(
+                            child: CustomButton(
+                              onTap: () {
+                                checkAnswer();
+                              },
+                              text: 'Enter',
 
-                  ),
-                ),
-              ],
-    ),
-    ),
-      ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              default:
+                return Container();//error page
+            }
+          }),
+
     );
   }
   void checkAnswer(){
