@@ -1,8 +1,12 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tomato_game/home_page.dart';
+import 'package:tomato_game/models/user_model.dart';
 
 import 'Custom_Widgets/custom_button.dart';
 import 'signup.dart';
@@ -15,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController emailController = new TextEditingController();
@@ -127,6 +132,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   text: 'Login',
                 ),
+                const SizedBox(height: 25,),
+                FloatingActionButton.extended(
+                  label: const Text('Sign Up with Google',
+                    style: TextStyle(color: Colors.black,
+                        fontSize: 18, fontWeight: FontWeight.bold),), // <-- Text
+                  backgroundColor: Colors.redAccent,
+                  icon:  const Icon(FontAwesomeIcons.google,
+                    size: 24,),
+                  onPressed: () { signInWithGoogle(); }, // <-- Icon,
+                ),
                 const SizedBox(height: 20,),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -165,6 +180,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  signInWithGoogle() async{
+
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken
+    );
+
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+    print(userCredential.user?.displayName);
+
+
+
+  }
+
   void signIn(String email, String password) async{
     if(_formKey.currentState!.validate()){
       await _auth.signInWithEmailAndPassword(email: email, password: password)

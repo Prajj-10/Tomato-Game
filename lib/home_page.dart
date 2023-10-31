@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +10,7 @@ import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/Custom_Widgets/custom_textfield.dart';
 
 import 'models/api_model.dart';
+import 'models/user_model.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -18,6 +21,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+
   late Future<QuestionAnswer?>? _futurequestion;
   final TextEditingController ansController = TextEditingController();
 
@@ -27,6 +34,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState(){
     super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value){
+      loggedInUser = UserModel.fromMap(value.data());
+      setState((){});
+    });
     initfuture();
   }
   initfuture(){
@@ -74,16 +89,18 @@ class _HomePageState extends State<HomePage> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
+                          const SizedBox(height: 10,),
+                          Text("Welcome ${loggedInUser.name!}"),
                           const SizedBox(height: 30,),
                           const Text("Enter the correct number: "),
                           const SizedBox(height: 20,),
                           Center(
-                            child: Image.network(
-                              questionAns!.question,
-                              width: 400,
-                              height: 500,
-                            ),
-                          ),
+                                child: Image.network(
+                                  questionAns!.question,
+                                  width: 400,
+                                  height: 500,
+                                ),
+                              ),
                           const SizedBox(height: 20,),
                           Center(
                               child: TextField(
@@ -129,7 +146,7 @@ class _HomePageState extends State<HomePage> {
       AnimatedSnackBar.material("Correct Answer",
           type: AnimatedSnackBarType.success,
           mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
-      getData();
+      //getData();
       //Fluttertoast.showToast(msg: "Correct Answer");
     }
     else{

@@ -240,15 +240,6 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
                       text: 'Sign Up',
                     ),
                     const SizedBox(height: 20),
-                    FloatingActionButton.extended(
-                      label: const Text('Sign Up with Google',
-                      style: TextStyle(color: Colors.black,
-                      fontSize: 18, fontWeight: FontWeight.bold),), // <-- Text
-                      backgroundColor: Colors.redAccent,
-                      icon:  const Icon(FontAwesomeIcons.google,
-                      size: 24,),
-                      onPressed: () {  }, // <-- Icon,
-                      ),
                   ],
                 ),
               ),

@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  google_sign_in: ^6.1.5
   animated_snack_bar: ^0.4.0
   cloud_firestore: ^4.12.1
   material_symbols_icons: ^4.2671.0
