@@ -1,15 +1,11 @@
 import 'dart:convert';
-
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
-import 'package:tomato_game/Custom_Widgets/custom_textfield.dart';
-
 import '../models/api_model.dart';
 import '../models/user_model.dart';
 import 'login_page.dart';
@@ -24,16 +20,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final _formKey = GlobalKey<FormState>();
+
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
   final googleSignIn = GoogleSignIn();
 
   late Future<QuestionAnswer?>? _futurequestion;
-  final TextEditingController ansController = TextEditingController();
+  TextEditingController ansController = TextEditingController();
 
   // bool _isLoading = true;
-  // // List<QuestionAnswer> questionAnswer = [];
+  List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState(){
@@ -57,7 +55,6 @@ class _HomePageState extends State<HomePage> {
       String url = "https://marcconrad.com/uob/tomato/api.php";
       http.Response res = await http.get(Uri.parse(url));
       questionAns = QuestionAnswer.fromJson(json.decode(res.body));
-
       return questionAns;
     }
     catch(e){
@@ -72,7 +69,10 @@ class _HomePageState extends State<HomePage> {
     await googleSignIn.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()));
-    Fluttertoast.showToast(msg: "Logged Out Successfully.");
+    // Fluttertoast.showToast(msg: "Logged Out Successfully.");
+    AnimatedSnackBar.material("Correct Answer",
+        type: AnimatedSnackBarType.success,
+        mobileSnackBarPosition: MobileSnackBarPosition.top);
   }
 
   @override
@@ -97,10 +97,10 @@ class _HomePageState extends State<HomePage> {
               case ConnectionState.none:
                 return Container(); // error//
               case ConnectionState.waiting: //loading
-                return Center(child: Container(height: 20,width: 20,child: const Center(child: CircularProgressIndicator()),));
+                return const Center(child: SizedBox(height: 40,width: 40,child: Center(child: CircularProgressIndicator()),));
               case ConnectionState.done:
                 if(snapshot.data==null){
-                  return Container(child: Text("No data"),);// no data
+                  return const Text("No data");// no data
                 }else{
                   //ui
                   return Padding(
@@ -122,19 +122,23 @@ class _HomePageState extends State<HomePage> {
                               ),
                           const SizedBox(height: 20,),
                           Center(
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: "Enter a value"
+                              child: Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                  controller: ansController,
+                                  decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: "Enter a value"
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value){
+                                    int? enteredValue = int.tryParse(value);
+                                    if(enteredValue != null){
+                                      ansController.text = enteredValue.toString();
+                                    }
+                                  },
+                                  style: const TextStyle(fontSize: 15),
                                 ),
-                                keyboardType: TextInputType.number,
-                                onChanged: (value){
-                                  int? enteredValue = int.tryParse(value);
-                                  if(enteredValue != null){
-                                    ansController.text = enteredValue.toString();
-                                  }
-                                },
-                                style: const TextStyle(fontSize: 15),
                               )
                           ),
                           const SizedBox(height: 25,),
@@ -142,9 +146,9 @@ class _HomePageState extends State<HomePage> {
                             child: CustomButton(
                               onTap: () {
                                 checkAnswer();
+                                //ansController.clear();
                               },
                               text: 'Enter',
-
                             ),
                           ),
                         ],
@@ -159,19 +163,25 @@ class _HomePageState extends State<HomePage> {
 
     );
   }
-  void checkAnswer(){
+  Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
     if(value == questionAns!.solution){
       AnimatedSnackBar.material("Correct Answer",
           type: AnimatedSnackBarType.success,
           mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
-      //getData();
+      QuestionAnswer? newQuestion = await getData();
+      setState(() {
+        questionAns = newQuestion;
+        ansController.clear(); // Clear the input field
+      });
+          // refreshData();
       //Fluttertoast.showToast(msg: "Correct Answer");
     }
     else{
       AnimatedSnackBar.material("Wrong Answer",
           type: AnimatedSnackBarType.error,
           mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+      ansController.clear();
       // Fluttertoast.showToast(msg: "Wrong Answer");
     }
   }
@@ -217,7 +227,7 @@ class _HomePageState extends State<HomePage> {
     );
   }*/
   
-  /*Future<List<QuestionAnswer>> getData() async {
+  /*Future<List<QuestionAnswer>> refreshData() async {
     final response = await http.get(
         Uri.parse('http://marcconrad.com/uob/tomato/api.php'));
     var data = jsonDecode(response.body.toString());
