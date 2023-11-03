@@ -1,14 +1,12 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:tomato_game/home_page.dart';
-import 'package:tomato_game/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:tomato_game/google_authentication/google_sign_in.dart';
+import 'package:tomato_game/pages/home_page.dart';
 
-import 'Custom_Widgets/custom_button.dart';
+import '../Custom_Widgets/custom_button.dart';
 import 'signup.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,10 +18,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+
+
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController emailController =  TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   late bool passwordVisible;
 
@@ -38,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final emailField = TextFormField(
         autofocus: false,
         controller: emailController,
@@ -140,7 +141,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.redAccent,
                   icon:  const Icon(FontAwesomeIcons.google,
                     size: 24,),
-                  onPressed: () { signInWithGoogle(); }, // <-- Icon,
+                  onPressed: () {
+                    final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                    provider.googleLogin();
+                    if(provider.googleLogin() == true){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  const HomePage()));
+                    }
+                     }, // <-- Icon,
                 ),
                 const SizedBox(height: 20,),
                 Row(
@@ -174,14 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),*/
               ],
          ),
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
-  signInWithGoogle() async{
+  /*signInWithGoogle() async{
 
     GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -196,9 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     print(userCredential.user?.displayName);
 
-
-
-  }
+  }*/
 
   void signIn(String email, String password) async{
     if(_formKey.currentState!.validate()){

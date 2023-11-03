@@ -8,10 +8,10 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/services/firebase_auth_methods.dart';
 
-import 'Custom_Widgets/custom_button.dart';
-import 'Custom_Widgets/custom_textfield.dart';
+import '../Custom_Widgets/custom_button.dart';
+import '../Custom_Widgets/custom_textfield.dart';
 import 'login_page.dart';
-import 'models/user_model.dart';
+import '../models/user_model.dart';
 
 class EmailPasswordSignup extends StatefulWidget {
   // static String routeName = '/signup.dart';   // The routes are created at main.dart to route the pages properly.

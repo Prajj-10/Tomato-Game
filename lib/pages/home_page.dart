@@ -5,12 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/Custom_Widgets/custom_textfield.dart';
 
-import 'models/api_model.dart';
-import 'models/user_model.dart';
+import '../models/api_model.dart';
+import '../models/user_model.dart';
+import 'login_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -24,6 +26,8 @@ class _HomePageState extends State<HomePage> {
 
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+
+  final googleSignIn = GoogleSignIn();
 
   late Future<QuestionAnswer?>? _futurequestion;
   final TextEditingController ansController = TextEditingController();
@@ -62,6 +66,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> logout(BuildContext context) async {
+    await googleSignIn.currentUser?.clearAuthCache();
+    await FirebaseAuth.instance.signOut();
+    await googleSignIn.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()));
+    Fluttertoast.showToast(msg: "Logged Out Successfully.");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +82,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Tomato Game"),
+        leading: IconButton(
+          onPressed: () {
+            logout(context);
+          }, icon: const Icon(Icons.logout_outlined),
+
+        )
       ),
       body: //future builder
       FutureBuilder<QuestionAnswer?>(
