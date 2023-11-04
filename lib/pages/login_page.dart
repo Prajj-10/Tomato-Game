@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
-import 'package:tomato_game/pages/home_page.dart';
+import 'package:tomato_game/pages/play_game.dart';
 
 import '../Custom_Widgets/custom_button.dart';
+import 'navigation.dart';
 import 'signup.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,28 +18,24 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-
-
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailController =  TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   late bool passwordVisible;
-
+  // late bool _isLoading = true;
 
   // Firebase
   final _auth = FirebaseAuth.instance;
 
   @override
-  void initState(){
+  void initState() {
     passwordVisible = false;
   }
 
   @override
   Widget build(BuildContext context) {
-
     final emailField = TextFormField(
         autofocus: false,
         controller: emailController,
@@ -87,11 +84,15 @@ class _LoginScreenState extends State<LoginScreen> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.vpn_key),
-          suffixIcon: IconButton(onPressed: (){
-            setState(() {
-              passwordVisible = !passwordVisible;
-            });
-          },icon: Icon(passwordVisible?Icons.visibility:Icons.visibility_off),),
+          suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                passwordVisible = !passwordVisible;
+              });
+            },
+            icon:
+                Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+          ),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
           border: OutlineInputBorder(
@@ -101,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child:SingleChildScrollView(
+        child: SingleChildScrollView(
           child: Container(
             color: Colors.white,
             padding: const EdgeInsets.all(36.0),
@@ -110,82 +111,115 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 25,),
-                const Text("Tomato Game",
-                style: TextStyle(fontSize: 30,
-                    color: Colors.redAccent,
-                fontWeight: FontWeight.bold),),
-                const SizedBox(height: 25,),
-                SizedBox(
-                  height: 200,
-                  child: Image.asset("assets/tomato-spin.gif",
-                    fit: BoxFit.contain,),  // Image location
-                ),
-                const SizedBox( height: 45,),
-                emailField,
-                const SizedBox(height: 25,),
-                passwordField,
-                const SizedBox(height: 25,),
-                CustomButton(
-                  onTap: () {
-                    signIn(emailController.text, passwordController.text);
-                  },
-                  text: 'Login',
-                ),
-                const SizedBox(height: 25,),
-                FloatingActionButton.extended(
-                  label: const Text('Sign Up with Google',
-                    style: TextStyle(color: Colors.black,
-                        fontSize: 18, fontWeight: FontWeight.bold),), // <-- Text
-                  backgroundColor: Colors.redAccent,
-                  icon:  const Icon(FontAwesomeIcons.google,
-                    size: 24,),
-                  onPressed: () {
-                    final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
-                    provider.googleLogin();
-                    if(provider.googleLogin() == true){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  const HomePage()));
-                    }
-                     }, // <-- Icon,
-                ),
-                const SizedBox(height: 20,),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Text("Don't have an account? ",
-                        style: TextStyle(fontSize: 15,
-                            fontWeight: FontWeight.bold) ,),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                children: [
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  const Text(
+                    "Tomato Game",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  SizedBox(
+                    height: 200,
+                    child: Image.asset(
+                      "assets/tomato-spin.gif",
+                      fit: BoxFit.contain,
+                    ), // Image location
+                  ),
+                  const SizedBox(
+                    height: 45,
+                  ),
+                  emailField,
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  passwordField,
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  CustomButton(
+                    onTap: () {
+                      signIn(emailController.text, passwordController.text);
+                    },
+                    text: 'Login',
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  FloatingActionButton.extended(
+                    label: const Text(
+                      'Sign Up with Google',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ), // <-- Text
+                    backgroundColor: Colors.redAccent,
+                    icon: const Icon(
+                      FontAwesomeIcons.google,
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      final provider = Provider.of<GoogleSignInProvider>(
+                          context,
+                          listen: false);
+                      provider.googleLogin();
+                      if (provider.googleLogin() == true) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Navigation()));
+                      }
+                    }, // <-- Icon,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text(
+                          "Don't have an account? ",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const EmailPasswordSignup()));
-                        },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                              color: Colors.redAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
-                      )
-                    ])
-                /*CustomButton(
+                                      const EmailPasswordSignup()),
+                            );
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
+                          ),
+                        )
+                      ])
+                  /*CustomButton(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context)=> const EmailPasswordSignup()));
                   },
                   text: 'Sign Up',
                 ),*/
-              ],
-         ),
+                ],
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   /*signInWithGoogle() async{
@@ -205,22 +239,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }*/
 
-  void signIn(String email, String password) async{
-    if(_formKey.currentState!.validate()){
-      await _auth.signInWithEmailAndPassword(email: email, password: password)
+  void signIn(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
           .then((uid) => {
-            AnimatedSnackBar.material("Login Successful",
-            type: AnimatedSnackBarType.success,
-            mobileSnackBarPosition: MobileSnackBarPosition.top).show(context),
-            //Fluttertoast.showToast(msg:"Login Successful"),
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> const HomePage()))
-      }).catchError((e){
+                AnimatedSnackBar.material(
+                  "Login Successful",
+                  type: AnimatedSnackBarType.success,
+                  mobilePositionSettings: const MobilePositionSettings(
+                    topOnAppearance: 100,
+                    topOnDissapear: 50,
+                    // bottomOnAppearance: 100,
+                    // bottomOnDissapear: 50,
+                    // left: 20,
+                    // right: 70,
+                  ),
+                ).show(context),
+                //Fluttertoast.showToast(msg:"Login Successful"),
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const Navigation()))
+              })
+          .catchError((e) {
         AnimatedSnackBar.material(e!.message,
-            type: AnimatedSnackBarType.error,
-            mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+                type: AnimatedSnackBarType.error,
+                mobileSnackBarPosition: MobileSnackBarPosition.top)
+            .show(context);
         // Fluttertoast.showToast(msg: e!.message);
       });
-
     }
   }
 }

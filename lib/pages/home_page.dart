@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
+import 'package:tomato_game/pages/play_game.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
 import 'login_page.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,7 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final _formKey = GlobalKey<FormState>();
 
   User? user = FirebaseAuth.instance.currentUser;
@@ -34,32 +33,33 @@ class _HomePageState extends State<HomePage> {
   List<QuestionAnswer> questionAnswer = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
         .get()
-        .then((value){
+        .then((value) {
       loggedInUser = UserModel.fromMap(value.data());
-      setState((){});
+      setState(() {});
     });
     initfuture();
   }
-  initfuture(){
+
+  initfuture() {
     _futurequestion = getData();
   }
+
   QuestionAnswer? questionAns;
- Future<QuestionAnswer?> getData() async{
-    try{
+  Future<QuestionAnswer?> getData() async {
+    try {
       String url = "https://marcconrad.com/uob/tomato/api.php";
       http.Response res = await http.get(Uri.parse(url));
       questionAns = QuestionAnswer.fromJson(json.decode(res.body));
       return questionAns;
-    }
-    catch(e){
+    } catch (e) {
       return null;
-    //  debugPrint(e.toString());
+      //  debugPrint(e.toString());
     }
   }
 
@@ -67,12 +67,22 @@ class _HomePageState extends State<HomePage> {
     await googleSignIn.currentUser?.clearAuthCache();
     await FirebaseAuth.instance.signOut();
     await googleSignIn.signOut();
+    AnimatedSnackBar.material(
+      "Logged Out Sucessfully.",
+      type: AnimatedSnackBarType.success,
+      duration: const Duration(milliseconds: 1700),
+      mobilePositionSettings: const MobilePositionSettings(
+        topOnAppearance: 100,
+        // topOnDissapear: 50,
+        // bottomOnAppearance: 100,
+        //bottomOnDissapear: 50,
+        // left: 20,
+        // right: 70,
+      ),
+    );
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()));
+        MaterialPageRoute(builder: (context) => const PlayGame()));
     // Fluttertoast.showToast(msg: "Logged Out Successfully.");
-    AnimatedSnackBar.material("Correct Answer",
-        type: AnimatedSnackBarType.success,
-        mobileSnackBarPosition: MobileSnackBarPosition.top);
   }
 
   @override
@@ -80,113 +90,144 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Tomato Game"),
-        leading: IconButton(
-          onPressed: () {
-            logout(context);
-          }, icon: const Icon(Icons.logout_outlined),
-
-        )
-      ),
+          centerTitle: true,
+          title: const Text("Tomato Game"),
+          leading: IconButton(
+            onPressed: () {
+              logout(context);
+            },
+            icon: const Icon(Icons.logout_outlined),
+          )),
       body: //future builder
-      FutureBuilder<QuestionAnswer?>(
-          future:_futurequestion,
-          builder: (BuildContext context, AsyncSnapshot<QuestionAnswer?> snapshot){
-            switch (snapshot.connectionState){
-              case ConnectionState.none:
-                return Container(); // error//
-              case ConnectionState.waiting: //loading
-                return const Center(child: SizedBox(height: 40,width: 40,child: Center(child: CircularProgressIndicator()),));
-              case ConnectionState.done:
-                if(snapshot.data==null){
-                  return const Text("No data");// no data
-                }else{
-                  //ui
-                  return Padding(
-                    padding: const EdgeInsets.all(36.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 10,),
-                          Text("Welcome ${loggedInUser.name!}"),
-                          const SizedBox(height: 30,),
-                          const Text("Enter the correct number: "),
-                          const SizedBox(height: 20,),
-                          Center(
+          FutureBuilder<QuestionAnswer?>(
+              future: _futurequestion,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuestionAnswer?> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    return Container(); // error//
+                  case ConnectionState.waiting: //loading
+                    return const Center(
+                        child: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: Center(child: CircularProgressIndicator()),
+                    ));
+                  case ConnectionState.done:
+                    if (snapshot.data == null) {
+                      return const Text("No data"); // no data
+                    } else {
+                      //ui
+                      return Padding(
+                        padding: const EdgeInsets.all(36.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text("Welcome ${loggedInUser.name!}"),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              const Text("Enter the correct number: "),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
                                 child: Image.network(
                                   questionAns!.question,
                                   width: 400,
-                                  height: 500,
+                                  height: 300,
                                 ),
                               ),
-                          const SizedBox(height: 20,),
-                          Center(
-                              child: Form(
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                  child: Form(
                                 key: _formKey,
                                 child: TextFormField(
                                   controller: ansController,
                                   decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
-                                      hintText: "Enter a value"
-                                  ),
+                                      hintText: "Enter a value"),
                                   keyboardType: TextInputType.number,
-                                  onChanged: (value){
+                                  onChanged: (value) {
                                     int? enteredValue = int.tryParse(value);
-                                    if(enteredValue != null){
-                                      ansController.text = enteredValue.toString();
+                                    if (enteredValue != null) {
+                                      ansController.text =
+                                          enteredValue.toString();
                                     }
                                   },
                                   style: const TextStyle(fontSize: 15),
                                 ),
-                              )
+                              )),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Center(
+                                  child: CustomButton(
+                                onTap: () {
+                                  checkAnswer();
+                                  //ansController.clear();
+                                },
+                                text: 'Enter',
+                              )),
+                            ],
                           ),
-                          const SizedBox(height: 25,),
-                          Center(
-                            child: CustomButton(
-                              onTap: () {
-                                checkAnswer();
-                                //ansController.clear();
-                              },
-                              text: 'Enter',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                        ),
+                      );
+                    }
+                  default:
+                    return Container(); //error page
                 }
-              default:
-                return Container();//error page
-            }
-          }),
-
+              }),
     );
   }
+
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
-    if(value == questionAns!.solution){
-      AnimatedSnackBar.material("Correct Answer",
-          type: AnimatedSnackBarType.success,
-          mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+    if (value == questionAns!.solution) {
+      AnimatedSnackBar.material(
+        "Correct Answer",
+        type: AnimatedSnackBarType.success,
+        duration: const Duration(milliseconds: 1700),
+        mobilePositionSettings: const MobilePositionSettings(
+          topOnAppearance: 100,
+          // topOnDissapear: 50,
+          // bottomOnAppearance: 100,
+          //bottomOnDissapear: 50,
+          // left: 20,
+          // right: 70,
+        ),
+      ).show(context);
       QuestionAnswer? newQuestion = await getData();
       setState(() {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
       });
-          // refreshData();
+      // refreshData();
       //Fluttertoast.showToast(msg: "Correct Answer");
-    }
-    else{
-      AnimatedSnackBar.material("Wrong Answer",
-          type: AnimatedSnackBarType.error,
-          mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+    } else {
+      AnimatedSnackBar.material(
+        "Wrong Answer",
+        type: AnimatedSnackBarType.error,
+        duration: const Duration(milliseconds: 1700),
+        mobilePositionSettings: const MobilePositionSettings(
+          topOnAppearance: 100,
+          //topOnDissapear: 50,
+          // bottomOnAppearance: 100,
+          // bottomOnDissapear: 50,
+          // left: 20,
+          // right: 70,
+        ),
+      ).show(context);
       ansController.clear();
+
       // Fluttertoast.showToast(msg: "Wrong Answer");
     }
   }
-
-
 
   /*@override
   Widget build(BuildContext context) {
@@ -226,7 +267,7 @@ class _HomePageState extends State<HomePage> {
       }
     );
   }*/
-  
+
   /*Future<List<QuestionAnswer>> refreshData() async {
     final response = await http.get(
         Uri.parse('http://marcconrad.com/uob/tomato/api.php'));
@@ -243,5 +284,4 @@ class _HomePageState extends State<HomePage> {
       return questionAnswer;
     }
   }*/
-
 }

@@ -22,7 +22,6 @@ class EmailPasswordSignup extends StatefulWidget {
 }
 
 class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
-
   final _auth = FirebaseAuth.instance;
 
   final _formKey = GlobalKey<FormState>();
@@ -37,10 +36,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   late bool passwordVisible;
 
   @override
-  void initState(){
+  void initState() {
     passwordVisible = false;
   }
-
 
   /*void signUpUser() async {
     context.read<FirebaseAuthMethods>().signUpWithEmail(
@@ -52,7 +50,6 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
 
   @override
   Widget build(BuildContext context) {
-
     // Name Field
 
     final nameField = TextFormField(
@@ -118,7 +115,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         controller: passwordController,
         obscureText: !passwordVisible,
         validator: (value) {
-          RegExp regex =  RegExp(r'^.{6,}$');
+          RegExp regex = RegExp(r'^.{6,}$');
           if (value!.isEmpty) {
             return ("Password is required for login");
           }
@@ -132,11 +129,15 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.vpn_key),
-          suffixIcon: IconButton(onPressed: (){
-            setState(() {
-              passwordVisible = !passwordVisible;
-            });
-          },icon: Icon(passwordVisible?Icons.visibility:Icons.visibility_off,)),
+          suffixIcon: IconButton(
+              onPressed: () {
+                setState(() {
+                  passwordVisible = !passwordVisible;
+                });
+              },
+              icon: Icon(
+                passwordVisible ? Icons.visibility : Icons.visibility_off,
+              )),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
           border: OutlineInputBorder(
@@ -150,8 +151,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         controller: confirmPwController,
         obscureText: !passwordVisible,
         validator: (value) {
-          if (confirmPwController.text !=
-              passwordController.text) {
+          if (confirmPwController.text != passwordController.text) {
             return "Password don't match";
           }
           return null;
@@ -162,11 +162,15 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.vpn_key),
-          suffixIcon: IconButton(onPressed: (){
-            setState(() {
-              passwordVisible = !passwordVisible;
-            });
-          },icon: Icon(passwordVisible?Icons.visibility:Icons.visibility_off,)),
+          suffixIcon: IconButton(
+              onPressed: () {
+                setState(() {
+                  passwordVisible = !passwordVisible;
+                });
+              },
+              icon: Icon(
+                passwordVisible ? Icons.visibility : Icons.visibility_off,
+              )),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Confirm Password",
           border: OutlineInputBorder(
@@ -180,8 +184,11 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.red,),
-          onPressed: (){
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.red,
+          ),
+          onPressed: () {
             Navigator.of(context).pop();
           },
         ),
@@ -220,7 +227,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
                         hintText: 'Enter your email',
                       ),
                     ),*/
-                    const SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     passwordField,
                     /*Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -250,20 +259,33 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     );
   }
 
-  void signUp(String email, String password) async{
-    if(_formKey.currentState!.validate()){
-      await _auth.createUserWithEmailAndPassword(email: email, password: password)
+  void signUp(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {
-        postDetailsToFireStore(),
-      }).catchError((e){
-        AnimatedSnackBar.material(e!.message,
-            type: AnimatedSnackBarType.error,
-            mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+                postDetailsToFireStore(),
+              })
+          .catchError((e) {
+        AnimatedSnackBar.material(
+          e!.message,
+          type: AnimatedSnackBarType.error,
+          duration: const Duration(milliseconds: 1700),
+          mobilePositionSettings: const MobilePositionSettings(
+            topOnAppearance: 100,
+            // topOnDissapear: 50,
+            // bottomOnAppearance: 100,
+            //bottomOnDissapear: 50,
+            // left: 20,
+            // right: 70,
+          ),
+        ).show(context);
         // Fluttertoast.showToast(msg: e!.message);
       });
     }
   }
-  postDetailsToFireStore() async{
+
+  postDetailsToFireStore() async {
     // Calling Firestore
     // Calling userModel
     // Sending those values
@@ -279,17 +301,22 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     userModel.password = passwordController.text;
 
     await firebaseFirestore
-    .collection("users")
-    .doc(user.uid)
-    .set(userModel.toMap());
-    AnimatedSnackBar.material("Account Created Successfully",
-        type: AnimatedSnackBarType.success,
-    mobileSnackBarPosition: MobileSnackBarPosition.top).show(context);
+        .collection("users")
+        .doc(user.uid)
+        .set(userModel.toMap());
+    AnimatedSnackBar.material(
+      "Account Created Successfully",
+      type: AnimatedSnackBarType.success,
+      duration: const Duration(milliseconds: 1700),
+      mobilePositionSettings: const MobilePositionSettings(
+        topOnAppearance: 100,
+      ),
+    ).show(context);
     //Fluttertoast.showToast(msg: "Account created successfully.");
 
     Navigator.pushAndRemoveUntil(
-        context as BuildContext, MaterialPageRoute(
-        builder: (context)=>const LoginScreen()),
-            (route) => false);
+        context as BuildContext,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false);
   }
 }
