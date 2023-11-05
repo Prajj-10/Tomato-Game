@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/pages/home_page.dart';
@@ -41,10 +40,20 @@ class _PlayGameState extends State<PlayGame> {
   @override
   void initState() {
     getDetails();
+    loggedIn();
+  }
+
+  bool loggedIn() {
+    if (name != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool loggedIn = (name != null) ? true : false;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -76,7 +85,13 @@ class _PlayGameState extends State<PlayGame> {
                   ), // Image location
                 ),
                 const SizedBox(
-                  height: 45,
+                  height: 30,
+                ),
+                Center(
+                  child: loggedIn ? Text("Welcome $name") : const Text(""),
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 CustomButton(
                   text: 'Play',

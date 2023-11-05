@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +10,7 @@ import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/pages/play_game.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
-import 'login_page.dart';
+import 'navigation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +20,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int score = 0; // Initialize the score
+  late Timer _gameTimer;
+  int _timeLeft = 60; // Set the initial time in seconds
+
   final _formKey = GlobalKey<FormState>();
 
   User? user = FirebaseAuth.instance.currentUser;
@@ -44,6 +49,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {});
     });
     initfuture();
+    _startGameTimer();
   }
 
   initfuture() {
@@ -61,6 +67,20 @@ class _HomePageState extends State<HomePage> {
       return null;
       //  debugPrint(e.toString());
     }
+  }
+
+  void _startGameTimer() {
+    _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft--;
+        } else {
+          _gameTimer.cancel();
+          _showGameOverDialog();
+          // Implement logic to end the game here (e.g., show a game-over screen).
+        }
+      });
+    });
   }
 
   Future<void> logout(BuildContext context) async {
@@ -123,14 +143,31 @@ class _HomePageState extends State<HomePage> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
                               Text("Welcome ${loggedInUser.name!}"),
                               const SizedBox(
                                 height: 30,
                               ),
-                              const Text("Enter the correct number: "),
+                              Text(
+                                "Time left: $_timeLeft seconds",
+                                style: const TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Score : $score",
+                                style: const TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              const Text(
+                                "Enter the correct number: ",
+                                style: TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -189,6 +226,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
     if (value == questionAns!.solution) {
+      QuestionAnswer? newQuestion = await getData();
       AnimatedSnackBar.material(
         "Correct Answer",
         type: AnimatedSnackBarType.success,
@@ -202,11 +240,13 @@ class _HomePageState extends State<HomePage> {
           // right: 70,
         ),
       ).show(context);
-      QuestionAnswer? newQuestion = await getData();
       setState(() {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
+        score++;
+        _timeLeft += 5;
       });
+
       // refreshData();
       //Fluttertoast.showToast(msg: "Correct Answer");
     } else {
@@ -223,65 +263,69 @@ class _HomePageState extends State<HomePage> {
           // right: 70,
         ),
       ).show(context);
-      ansController.clear();
+      setState(() {
+        ansController.clear();
+        _timeLeft -= 1;
+      });
 
       // Fluttertoast.showToast(msg: "Wrong Answer");
     }
   }
 
-  /*@override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getData(),
-      builder: (context, snapshot) {
-        if(snapshot.hasData){
-          return ListView.builder(
-              itemCount: 1,
-              itemBuilder: (context, index){
-                return Container(
-                  height: 150,
-                  color: Colors.greenAccent,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal:10, ),
-                  margin: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children:[
-                      Text('Question : ${questionAnswer[index].question.toString()}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text('Answer : ${questionAnswer[index].solution.toString()}',
-                          style:const TextStyle(fontSize: 18) )
-                    ],
-                  ),
-                );
-              }
-          );
-        }
-        else if(snapshot.connectionState == ConnectionState.waiting){
-          return const Center(child: CircularProgressIndicator(),);
-        }
-        else{
-          return const Text('No Data Available.');
-        }
-      }
+  // Function to restart the game
+  void _restartGame() {
+    // You can reset the game state, including score, timer, and other relevant data.
+    setState(() {
+      score = 0;
+      _timeLeft = 60; // Reset the timer to the initial time
+    });
+
+    // Start the game timer again
+    _startGameTimer();
+  }
+
+  // Function to navigate to the home screen
+  void _navigateToHomeScreen() {
+    // You can use Navigator to navigate to the home screen or any other desired screen.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              const Navigation()), // Replace "HomeScreen" with your actual home screen widget.
     );
-  }*/
+  }
 
-  /*Future<List<QuestionAnswer>> refreshData() async {
-    final response = await http.get(
-        Uri.parse('http://marcconrad.com/uob/tomato/api.php'));
-    var data = jsonDecode(response.body.toString());
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Game Over"),
+          content: Text("Your final score: $score"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                // Close the dialog
+                Navigator.pop(context);
 
-    if (response.statusCode == 200) {
-      for (Map<String, dynamic> index in data) {
-        questionAnswer.add(QuestionAnswer.fromJson(index));
-      }
-      return questionAnswer;
-      // questionAnswer = data.map((e)=> QuestionAnswer.fromJson(e)).toList();
-    }
-    else {
-      return questionAnswer;
-    }
-  }*/
+                // You can implement logic to restart the game here.
+                _restartGame();
+              },
+              child: const Text("Play Again"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Close the dialog
+                Navigator.pop(context);
+
+                // You can implement logic to navigate to the home screen here.
+                _navigateToHomeScreen();
+              },
+              child: const Text("Return to Main Screen."),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

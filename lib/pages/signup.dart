@@ -2,14 +2,8 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
-import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
-import 'package:tomato_game/services/firebase_auth_methods.dart';
 
 import '../Custom_Widgets/custom_button.dart';
-import '../Custom_Widgets/custom_textfield.dart';
 import 'login_page.dart';
 import '../models/user_model.dart';
 
@@ -122,6 +116,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
           if (!regex.hasMatch(value)) {
             return ("Enter Valid Password(Min. 6 Character)");
           }
+          return null;
         },
         onSaved: (value) {
           passwordController.text = value!;
@@ -315,7 +310,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     //Fluttertoast.showToast(msg: "Account created successfully.");
 
     Navigator.pushAndRemoveUntil(
-        context as BuildContext,
+        context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
         (route) => false);
   }

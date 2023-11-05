@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
-import 'package:tomato_game/pages/play_game.dart';
 
 import '../Custom_Widgets/custom_button.dart';
 import 'navigation.dart';
@@ -77,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (!regex.hasMatch(value)) {
             return ("Password must be minimum 6 characters.");
           }
+          return null;
         },
         onSaved: (value) {
           passwordController.text = value!;
@@ -247,6 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 AnimatedSnackBar.material(
                   "Login Successful",
                   type: AnimatedSnackBarType.success,
+                  duration: const Duration(milliseconds: 1700),
                   mobilePositionSettings: const MobilePositionSettings(
                     topOnAppearance: 100,
                     topOnDissapear: 50,
