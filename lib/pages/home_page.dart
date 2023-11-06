@@ -110,9 +110,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Tomato Game"),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          // title: const Text("Tomato Game"),
           leading: IconButton(
+            color: Colors.red,
             onPressed: () {
               logout(context);
             },
@@ -125,17 +127,32 @@ class _HomePageState extends State<HomePage> {
                   AsyncSnapshot<QuestionAnswer?> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
-                    return Container(); // error//
+                    return Container(
+                      child: Text(
+                        "Could not establish Connection.",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Electronic Highway Sign'),
+                      ),
+                    ); // error//
                   case ConnectionState.waiting: //loading
                     return const Center(
                         child: SizedBox(
-                      height: 40,
-                      width: 40,
+                      height: 50,
+                      width: 50,
                       child: Center(child: CircularProgressIndicator()),
                     ));
                   case ConnectionState.done:
                     if (snapshot.data == null) {
-                      return const Text("No data"); // no data
+                      return Center(
+                          child: const Text(
+                        "Could not fetch data from the API.",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Electronic Highway Sign'),
+                      )); // no data
                     } else {
                       //ui
                       return Padding(
@@ -143,30 +160,53 @@ class _HomePageState extends State<HomePage> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              Text("Welcome ${loggedInUser.name!}"),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              Text(
-                                "Time left: $_timeLeft seconds",
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                "Score : $score",
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(
+                              // Text("Welcome ${loggedInUser.name!}"),
+                              /*const SizedBox(
                                 height: 20,
+                              ),*/
+                              Row(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      "Time: $_timeLeft seconds",
+                                      style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily:
+                                              'Electronic Highway Sign'),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 75,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      "Score : $score",
+                                      //textAlign: TextAlign.start,
+                                      style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily:
+                                              'Electronic Highway Sign'),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Text(
-                                "Enter the correct number: ",
-                                style: TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              const SizedBox(
+                                height: 80,
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Enter the correct number: ",
+                                  //textAlign: TextAlign.,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Electronic Highway Sign'),
+                                ),
                               ),
                               const SizedBox(
                                 height: 20,
@@ -175,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                                 child: Image.network(
                                   questionAns!.question,
                                   width: 400,
-                                  height: 300,
+                                  height: 250,
                                 ),
                               ),
                               const SizedBox(
@@ -187,8 +227,12 @@ class _HomePageState extends State<HomePage> {
                                 child: TextFormField(
                                   controller: ansController,
                                   decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      hintText: "Enter a value"),
+                                    border: OutlineInputBorder(),
+                                    hintText: "Enter a value",
+                                    hintStyle: TextStyle(
+                                        fontFamily: 'Electronic Highway Sign',
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
                                     int? enteredValue = int.tryParse(value);
@@ -300,8 +344,20 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Game Over"),
-          content: Text("Your final score: $score"),
+          title: const Text(
+            "Game Over",
+            style: TextStyle(
+                fontFamily: 'Electronic Highway Sign',
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
+          content: Text(
+            "Your final score: $score",
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Electronic Highway Sign'),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -311,7 +367,13 @@ class _HomePageState extends State<HomePage> {
                 // You can implement logic to restart the game here.
                 _restartGame();
               },
-              child: const Text("Play Again"),
+              child: const Text(
+                "Play Again",
+                style: TextStyle(
+                    fontFamily: 'Electronic Highway Sign',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -321,7 +383,13 @@ class _HomePageState extends State<HomePage> {
                 // You can implement logic to navigate to the home screen here.
                 _navigateToHomeScreen();
               },
-              child: const Text("Return to Main Screen."),
+              child: const Text(
+                "Return to Main Screen",
+                style: TextStyle(
+                    fontFamily: 'Electronic Highway Sign',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14),
+              ),
             ),
           ],
         );

@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter_launcher_icons: ^0.13.1
   google_sign_in: ^6.1.5
   animated_snack_bar: ^0.4.0
   cloud_firestore: ^4.12.1
@@ -51,6 +52,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/tomato-icon.png"
+  min_sdk_android: 21
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -63,8 +69,33 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+      - family: Electronic Highway Sign
+        fonts:
+          - asset: assets/fonts/retro/electronic_highway.ttf
+      - family: Gotham
+        fonts:
+          - asset: assets/fonts/gotham/Gotham-Black.otf
+          - asset: assets/fonts/gotham/Gotham-Bold.otf
+          - asset: assets/fonts/gotham/Gotham-BookItalic.otf
+          - asset: assets/fonts/gotham/Gotham-Light.otf
+          - asset: assets/fonts/gotham/Gotham-Thin.otf
+          - asset: assets/fonts/gotham/Gotham-ThinItalic.otf
+          - asset: assets/fonts/gotham/Gotham-UltraItalic.otf
+          - asset: assets/fonts/gotham/Gotham-XLight.otf
+          - asset: assets/fonts/gotham/Gotham-XLightItalic.otf
+          - asset: assets/fonts/gotham/GothamBold.ttf
+          - asset: assets/fonts/gotham/GothamBoldItalic.ttf
+          - asset: assets/fonts/gotham/GothamBook.ttf
+          - asset: assets/fonts/gotham/GothamBookItalic.ttf
+          - asset: assets/fonts/gotham/GothamLight.ttf
+          - asset: assets/fonts/gotham/GothamLightItalic.ttf
+          - asset: assets/fonts/gotham/GothamMedium.ttf
+          - asset: assets/fonts/gotham/GothamMedium_1.ttf
+          - asset: assets/fonts/gotham/GothamMediumItalic.ttf
+
   assets:
-    - assets/
+    - assets/images/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

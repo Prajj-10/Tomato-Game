@@ -68,6 +68,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
           prefixIcon: const Icon(Icons.account_circle),
           contentPadding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
           hintText: "Name",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -98,6 +101,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
           prefixIcon: const Icon(Icons.mail),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Email",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -135,6 +141,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
               )),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -168,6 +177,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
               )),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Confirm Password",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -202,7 +214,10 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
                   children: [
                     const Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontFamily: 'Electronic Highway Sign',
+                          fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.08),
                     nameField,

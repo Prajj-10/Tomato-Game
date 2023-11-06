@@ -15,12 +15,17 @@ class CustomButton extends StatelessWidget {
       elevation: 5,
       borderRadius: BorderRadius.circular(36.0),
       color: Colors.redAccent,
-      child:MaterialButton(
+      child: MaterialButton(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-        minWidth: MediaQuery.of(context).size.width,
+        minWidth: MediaQuery.of(context).size.width / 2,
         onPressed: onTap,
-        child: Text(text,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+        child: Text(
+          text,
+          style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Electronic Highway Sign'),
+        ),
       ),
     );
   }

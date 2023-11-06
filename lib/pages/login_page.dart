@@ -57,6 +57,10 @@ class _LoginScreenState extends State<LoginScreen> {
           prefixIcon: const Icon(Icons.mail),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Email",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -84,7 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.vpn_key),
+          prefixIcon: const Icon(
+            Icons.vpn_key,
+          ),
+          iconColor: Colors.black,
           suffixIcon: IconButton(
             onPressed: () {
               setState(() {
@@ -96,6 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
+          hintStyle: TextStyle(
+              fontFamily: 'Electronic Highway Sign',
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -119,13 +130,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    height: 25,
+                    height: 70,
                   ),
                   const Text(
-                    "Tomato Game",
+                    "Login",
                     style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.redAccent,
+                        fontFamily: 'Electronic Highway Sign',
+                        fontSize: 40,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
@@ -134,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 200,
                     child: Image.asset(
-                      "assets/tomato-spin.gif",
+                      "assets/images/tomato-spin.gif",
                       fit: BoxFit.contain,
                     ), // Image location
                   ),
@@ -162,6 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: const Text(
                       'Sign Up with Google',
                       style: TextStyle(
+                          fontFamily: 'Electronic Highway Sign',
                           color: Colors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
@@ -184,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }, // <-- Icon,
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 40,
                   ),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +205,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           "Don't have an account? ",
                           style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Electronic Highway Sign'),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -206,9 +221,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             "Sign Up",
                             style: TextStyle(
+                                fontFamily: 'Electronic Highway Sign',
                                 color: Colors.redAccent,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                                fontSize: 16),
                           ),
                         )
                       ])
@@ -226,23 +242,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  /*signInWithGoogle() async{
-
-    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken
-    );
-
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-
-    print(userCredential.user?.displayName);
-
-  }*/
 
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {

@@ -53,25 +53,30 @@ class _PlayGameState extends State<PlayGame> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     bool loggedIn = (name != null) ? true : false;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            color: Colors.white,
+            height: size.height,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+              const Color(0xffffff).withOpacity(1.0),
+              const Color(0xabbaab).withOpacity(0.95),
+            ], begin: Alignment.bottomCenter, end: Alignment.topCenter)),
+            //color: Colors.white,
             padding: const EdgeInsets.all(36.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(
-                  height: 170,
-                ),
                 const Text(
                   "Tomato Game",
                   style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.redAccent,
+                      fontSize: 50,
+                      fontFamily: 'Electronic Highway Sign',
+                      color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
@@ -80,7 +85,7 @@ class _PlayGameState extends State<PlayGame> {
                 SizedBox(
                   height: 200,
                   child: Image.asset(
-                    "assets/tomato-spin.gif",
+                    "assets/images/tomato-spin.gif",
                     fit: BoxFit.contain,
                   ), // Image location
                 ),
@@ -88,7 +93,15 @@ class _PlayGameState extends State<PlayGame> {
                   height: 30,
                 ),
                 Center(
-                  child: loggedIn ? Text("Welcome $name") : const Text(""),
+                  child: loggedIn
+                      ? Text(
+                          "Welcome $name",
+                          style: TextStyle(
+                              fontFamily: 'Electronic Highway Sign',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        )
+                      : const Text(""),
                 ),
                 const SizedBox(
                   height: 20,
@@ -123,7 +136,7 @@ class _PlayGameState extends State<PlayGame> {
                   },
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -131,7 +144,9 @@ class _PlayGameState extends State<PlayGame> {
                       const Text(
                         "Press ",
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Electronic Highway Sign'),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -145,13 +160,16 @@ class _PlayGameState extends State<PlayGame> {
                           style: TextStyle(
                               color: Colors.redAccent,
                               fontWeight: FontWeight.bold,
-                              fontSize: 15),
+                              fontSize: 18,
+                              fontFamily: 'Electronic Highway Sign'),
                         ),
                       ),
                       const Text(
                         "to go the the Login Page.",
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Electronic Highway Sign'),
                       ),
                     ])
               ],
