@@ -19,8 +19,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-    TextEditingController emailController = TextEditingController();
-   TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   late bool passwordVisible;
   // late bool _isLoading = true;
@@ -32,8 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     passwordVisible = false;
   }
-   emailField(){
-    return  TextFormField(
+
+  emailField() {
+    return TextFormField(
         autofocus: false,
         controller: emailController,
         keyboardType: TextInputType.emailAddress,
@@ -60,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
         ));
-   }
+  }
 
   //password field
   passwordField() {
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               });
             },
             icon:
-            Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+                Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
           ),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           hintText: "Password",
@@ -100,9 +101,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ));
   }
+
   @override
   Widget build(BuildContext context) {
-  var size = MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: SafeArea(
@@ -169,19 +171,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       FontAwesomeIcons.google,
                       size: 24,
                     ),
-                    onPressed: (){
-                      final provider =  Provider.of<GoogleSignInProvider>(
+                    onPressed: () {
+                      final provider = Provider.of<GoogleSignInProvider>(
                           context,
                           listen: false);
-                      provider.googleLogin().whenComplete((){
-                        if (provider.googleLogin() == true) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Navigation()));
-                        }
+                      provider.googleLogin().whenComplete(() {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Navigation()));
                       });
-
                     }, // <-- Icon,
                   ),
                   const SizedBox(
