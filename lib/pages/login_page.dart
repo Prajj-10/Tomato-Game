@@ -123,10 +123,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Container(
             height: size.height,
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  const Color(0xF29F9F).withOpacity(0.9),
-                  const Color(0xFAFAFA).withOpacity(1.0),
-                ],begin: Alignment.topCenter, end: Alignment.bottomCenter, )),
+                gradient: LinearGradient(
+              colors: [
+                const Color(0xF29F9F).withOpacity(0.9),
+                const Color(0xFAFAFA).withOpacity(1.0),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
             padding: const EdgeInsets.all(36.0),
             child: Form(
               key: _formKey,
@@ -184,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ), // <-- Text
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: Color(0xF29F9F).withOpacity(1.0),
                     icon: const Icon(
                       FontAwesomeIcons.google,
                       size: 24,
@@ -223,11 +227,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       const EmailPasswordSignup()),
                             );
                           },
-                          child: const Text(
+                          child: Text(
                             "Sign Up",
                             style: TextStyle(
                                 fontFamily: 'Electronic Highway Sign',
-                                color: Colors.redAccent,
+                                color: Color(0xF29F9F).withOpacity(1.0),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),

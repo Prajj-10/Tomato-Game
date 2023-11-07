@@ -44,7 +44,6 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
 
   @override
   Widget build(BuildContext context) {
-
     var size = MediaQuery.of(context).size;
 
     // Name Field
@@ -189,26 +188,30 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         ));
 
     return Scaffold(
-      /*appBar: AppBar(
-        backgroundColor: Colors.transparent.withOpacity(0),
+      appBar: AppBar(
+        backgroundColor: Color(0xF29F9F).withOpacity(0.9),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Colors.red,
+            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-      ),*/
+      ),
       body: Container(
         height: size.height,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              const Color(0xF29F9F).withOpacity(0.9),
-              const Color(0xFAFAFA).withOpacity(1.0),
-            ],begin: Alignment.topCenter, end: Alignment.bottomCenter, )),
+            gradient: LinearGradient(
+          colors: [
+            const Color(0xF29F9F).withOpacity(0.9),
+            const Color(0xFAFAFA).withOpacity(1.0),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        )),
         child: Padding(
           padding: const EdgeInsets.all(36.0),
           child: Form(
@@ -218,6 +221,17 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  /*Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(Icons.arrow_back)),
+                  ),*/
+                  /*const SizedBox(
+                    height: 100,
+                  ),*/
                   const Text(
                     "Sign Up",
                     style: TextStyle(

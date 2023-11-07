@@ -60,10 +60,14 @@ class _PlayGameState extends State<PlayGame> {
         child: Container(
           height: size.height,
           decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                const Color(0xF29F9F).withOpacity(0.9),
-                const Color(0xFAFAFA).withOpacity(1.0),
-          ],begin: Alignment.topCenter, end: Alignment.bottomCenter, )),
+              gradient: LinearGradient(
+            colors: [
+              const Color(0xF29F9F).withOpacity(0.9),
+              const Color(0xFAFAFA).withOpacity(1.0),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )),
           //color: Colors.white,
           padding: const EdgeInsets.all(36.0),
           child: Column(
@@ -112,8 +116,7 @@ class _PlayGameState extends State<PlayGame> {
                     AnimatedSnackBar.material(
                             "Please Login with an account to play the game.",
                             type: AnimatedSnackBarType.error,
-                            mobileSnackBarPosition:
-                                MobileSnackBarPosition.top)
+                            mobileSnackBarPosition: MobileSnackBarPosition.top)
                         .show(context);
                   } else {
                     Navigator.pushReplacement(
@@ -154,10 +157,10 @@ class _PlayGameState extends State<PlayGame> {
                             MaterialPageRoute(
                                 builder: (context) => const LoginScreen()));
                       },
-                      child: const Text(
+                      child: Text(
                         "here ",
                         style: TextStyle(
-                            color: Colors.redAccent,
+                            color: Color(0xF29F9F).withOpacity(1.0),
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                             fontFamily: 'Electronic Highway Sign'),
