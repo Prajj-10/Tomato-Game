@@ -121,7 +121,12 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            color: Colors.white,
+            height: size.height,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  const Color(0xF29F9F).withOpacity(0.9),
+                  const Color(0xFAFAFA).withOpacity(1.0),
+                ],begin: Alignment.topCenter, end: Alignment.bottomCenter, )),
             padding: const EdgeInsets.all(36.0),
             child: Form(
               key: _formKey,

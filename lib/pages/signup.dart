@@ -44,6 +44,9 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
 
   @override
   Widget build(BuildContext context) {
+
+    var size = MediaQuery.of(context).size;
+
     // Name Field
 
     final nameField = TextFormField(
@@ -186,9 +189,8 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         ));
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
+      /*appBar: AppBar(
+        backgroundColor: Colors.transparent.withOpacity(0),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
@@ -199,68 +201,71 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
             Navigator.of(context).pop();
           },
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: Form(
-              key: _formKey,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Sign Up",
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontFamily: 'Electronic Highway Sign',
-                          fontWeight: FontWeight.bold),
+      ),*/
+      body: Container(
+        height: size.height,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              const Color(0xF29F9F).withOpacity(0.9),
+              const Color(0xFAFAFA).withOpacity(1.0),
+            ],begin: Alignment.topCenter, end: Alignment.bottomCenter, )),
+        child: Padding(
+          padding: const EdgeInsets.all(36.0),
+          child: Form(
+            key: _formKey,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Sign Up",
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Electronic Highway Sign',
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+                  nameField,
+                  /*Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomTextField(
+                      controller: nameController,
+                      hintText: 'Enter your name',
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.08),
-                    nameField,
-                    /*Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomTextField(
-                        controller: nameController,
-                        hintText: 'Enter your name',
-                      ),
-                    ),*/
-                    const SizedBox(height: 20),
-                    emailField,
-                    /*Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomTextField(
-                        controller: emailController,
-                        hintText: 'Enter your email',
-                      ),
-                    ),*/
-                    const SizedBox(
-                      height: 20,
+                  ),*/
+                  const SizedBox(height: 20),
+                  emailField,
+                  /*Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomTextField(
+                      controller: emailController,
+                      hintText: 'Enter your email',
                     ),
-                    passwordField,
-                    /*Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomTextField(
-                        controller: passwordController,
-                        hintText: 'Enter your password',
-                      ),
-                    ),*/
-                    const SizedBox(height: 20),
-                    confirmPasswordField,
-                    const SizedBox(height: 40),
-                    CustomButton(
-                      onTap: () {
-                        signUp(emailController.text, passwordController.text);
-                        //Navigator.pushNamed(context, EmailPasswordLogin.routeName);
-                      },
-                      text: 'Sign Up',
+                  ),*/
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  passwordField,
+                  /*Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomTextField(
+                      controller: passwordController,
+                      hintText: 'Enter your password',
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                  ),*/
+                  const SizedBox(height: 20),
+                  confirmPasswordField,
+                  const SizedBox(height: 40),
+                  CustomButton(
+                    onTap: () {
+                      signUp(emailController.text, passwordController.text);
+                      //Navigator.pushNamed(context, EmailPasswordLogin.routeName);
+                    },
+                    text: 'Sign Up',
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           ),
