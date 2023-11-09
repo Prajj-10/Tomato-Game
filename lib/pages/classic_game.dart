@@ -1,14 +1,10 @@
 import 'dart:convert';
-
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:tomato_game/pages/play_game.dart';
-
 import '../Custom_Widgets/custom_button.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
@@ -22,24 +18,31 @@ class ClassicGame extends StatefulWidget {
 }
 
 class _ClassicGameState extends State<ClassicGame> {
+  // Initial Score and Round of the user.
   int score = 0;
   int round = 1;
 
+  // Google Sign-In object.
   final googleSignIn = GoogleSignIn();
 
+  // Form Key for validation.
   final _formKey = GlobalKey<FormState>();
 
+  // User Model for data extraction
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
+  // Future of the API function.
   late Future<QuestionAnswer?>? _futurequestion;
   TextEditingController ansController = TextEditingController();
 
+  // A list to get data from the API.
   List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState() {
     super.initState();
+    // Firebase is initialized at first for data.
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
@@ -48,6 +51,7 @@ class _ClassicGameState extends State<ClassicGame> {
       loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
+    // Function of the API.
     initfuture();
   }
 
@@ -57,9 +61,12 @@ class _ClassicGameState extends State<ClassicGame> {
 
   @override
   Widget build(BuildContext context) {
+    // Phone Size
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      // Main Background
       backgroundColor: Colors.white,
+      // Top Bar
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
@@ -75,7 +82,6 @@ class _ClassicGameState extends State<ClassicGame> {
               color: Colors.red,
             ),
           ],
-          // title: const Text("Tomato Game"),
           leading: IconButton(
             color: Colors.red,
             onPressed: () {
@@ -89,12 +95,15 @@ class _ClassicGameState extends State<ClassicGame> {
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [
+            // Gradient present in the page.
             const Color(0xF29F9F).withOpacity(0.9),
             const Color(0xFAFAFA).withOpacity(1.0),
           ],
+          // Flow of the Gradient colour.
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
+        // Future Builder to handle the call of the API.
         child: FutureBuilder<QuestionAnswer?>(
             future: _futurequestion,
             builder: (BuildContext context,
@@ -115,6 +124,7 @@ class _ClassicGameState extends State<ClassicGame> {
                       child: SizedBox(
                     height: 50,
                     width: 50,
+                    // Loading Screen
                     child: Center(child: CircularProgressIndicator()),
                   ));
                 case ConnectionState.done:
@@ -128,16 +138,12 @@ class _ClassicGameState extends State<ClassicGame> {
                           fontFamily: 'Electronic Highway Sign'),
                     )); // no data
                   } else {
-                    //ui
+                    //Main UI.
                     return Padding(
                       padding: const EdgeInsets.all(36.0),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            // Text("Welcome ${loggedInUser.name!}"),
-                            /*const SizedBox(
-                                  height: 20,
-                                ),*/
                             Row(
                               children: [
                                 Align(
@@ -240,6 +246,7 @@ class _ClassicGameState extends State<ClassicGame> {
     );
   }
 
+  // Main function of the API too get data.
   QuestionAnswer? questionAns;
   Future<QuestionAnswer?> getData() async {
     try {
@@ -288,11 +295,6 @@ class _ClassicGameState extends State<ClassicGame> {
         duration: const Duration(milliseconds: 1700),
         mobilePositionSettings: const MobilePositionSettings(
           topOnAppearance: 100,
-          // topOnDissapear: 50,
-          // bottomOnAppearance: 100,
-          //bottomOnDissapear: 50,
-          // left: 20,
-          // right: 70,
         ),
       ).show(context);
       setState(() {
@@ -304,7 +306,6 @@ class _ClassicGameState extends State<ClassicGame> {
       });
 
       // refreshData();
-      //Fluttertoast.showToast(msg: "Correct Answer");
     } else {
       AnimatedSnackBar.material(
         "Wrong Answer",
@@ -312,11 +313,6 @@ class _ClassicGameState extends State<ClassicGame> {
         duration: const Duration(milliseconds: 1700),
         mobilePositionSettings: const MobilePositionSettings(
           topOnAppearance: 100,
-          //topOnDissapear: 50,
-          // bottomOnAppearance: 100,
-          // bottomOnDissapear: 50,
-          // left: 20,
-          // right: 70,
         ),
       ).show(context);
       setState(() {
@@ -330,7 +326,7 @@ class _ClassicGameState extends State<ClassicGame> {
   // Is called when the game needs to be restarted.
 
   void _restartGame() {
-    // You can reset the game state, including score, timer, and other relevant data.
+    // Reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
       round = 1; // Reset the timer to the initial time
@@ -362,7 +358,6 @@ class _ClassicGameState extends State<ClassicGame> {
       context: context,
       builder: (context) {
         return Container(
-          //height: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Color(0xF29F9F).withOpacity(0.9),
           ),
@@ -374,8 +369,6 @@ class _ClassicGameState extends State<ClassicGame> {
               ),
               elevation: 10,
               title: Container(
-                //color: Color(0xF29F9F).withOpacity(0.9),
-                //height: MediaQuery.of(context).size.height / 6,
                 child: const Text(
                   "Game Over",
                   style: TextStyle(
@@ -412,8 +405,6 @@ class _ClassicGameState extends State<ClassicGame> {
                   onPressed: () {
                     // Close the dialog
                     Navigator.pop(context);
-
-                    // You can implement logic to navigate to the home screen here.
                     _navigateToHomeScreen();
                   },
                   child: const Text(

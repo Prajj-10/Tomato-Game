@@ -1,6 +1,3 @@
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -16,24 +13,23 @@ class GoogleSignInProvider extends ChangeNotifier {
 
   GoogleSignInAccount get user => _user!;
 
-
+// Logs in user with Google authentication
   Future googleLogin() async {
     try {
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return;
       _user = googleUser;
 
-
       final googleAuth = await googleUser.authentication;
 
+      // Creates the credential
       final credential = GoogleAuthProvider.credential(
+        // Creates access and id token.
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
-
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-    }
-    catch (e) {
+    } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
@@ -41,24 +37,21 @@ class GoogleSignInProvider extends ChangeNotifier {
 
     notifyListeners();
     createUserInFirestore();
-    //const LoggedInWidget();
-    // createUserInFirestore();
-    // Fluttertoast.showToast(msg: "Logged In successfully.");
   }
 
   Future logout() async {
     await googleSignIn.currentUser?.clearAuthCache();
     await FirebaseAuth.instance.signOut();
     await googleSignIn.signOut();
-
   }
-  createUserInFirestore() async{
+
+  createUserInFirestore() async {
     // check if user exists in the users collection.
     final GoogleSignInAccount? user = googleSignIn.currentUser;
     final currentUser = FirebaseAuth.instance.currentUser;
     final DocumentSnapshot doc = await usersRef.doc(currentUser?.uid).get();
 
-    if(!doc.exists){
+    if (!doc.exists) {
       FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
       // call user model
@@ -75,5 +68,4 @@ class GoogleSignInProvider extends ChangeNotifier {
           .set(userModel.toMap(), SetOptions(merge: true));
     }
   }
-
 }

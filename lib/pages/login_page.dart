@@ -16,22 +16,26 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Form Key to collect data and for validation.
   final _formKey = GlobalKey<FormState>();
 
+  // Text Editing Controllers for TextFormFields.
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  // boolean variable for hide and un-hide password.
   late bool passwordVisible;
-  // late bool _isLoading = true;
 
   // Firebase
   final _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
+    // Initially made invisible.
     passwordVisible = false;
   }
 
+  // Email Field.
   emailField() {
     return TextFormField(
         autofocus: false,
@@ -66,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ));
   }
 
-  //password field
+  //Password field
   passwordField() {
     return TextFormField(
         autofocus: false,
@@ -114,8 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Phone Size
     var size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -124,9 +128,11 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: BoxDecoration(
                 gradient: LinearGradient(
               colors: [
+                // Gradient Colour with opacity
                 const Color(0xF29F9F).withOpacity(0.9),
                 const Color(0xFAFAFA).withOpacity(1.0),
               ],
+              // Pattern of the Gradient.
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             )),
@@ -178,6 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 25,
                   ),
+                  // Button for Signing up with Google.
                   FloatingActionButton.extended(
                     label: const Text(
                       'Sign Up with Google',
@@ -193,6 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       size: 24,
                     ),
                     onPressed: () {
+                      // Function to sign up the user with Google.
                       final provider = Provider.of<GoogleSignInProvider>(
                           context,
                           listen: false);
@@ -236,12 +244,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         )
                       ])
-                  /*CustomButton(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> const EmailPasswordSignup()));
-                  },
-                  text: 'Sign Up',
-                ),*/
                 ],
               ),
             ),
@@ -251,6 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Function to Sign in with Email and Pasword.
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       await _auth
@@ -263,13 +266,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   mobilePositionSettings: const MobilePositionSettings(
                     topOnAppearance: 100,
                     topOnDissapear: 50,
-                    // bottomOnAppearance: 100,
-                    // bottomOnDissapear: 50,
-                    // left: 20,
-                    // right: 70,
                   ),
                 ).show(context),
-                //Fluttertoast.showToast(msg:"Login Successful"),
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const Navigation()))
               })
@@ -278,10 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 type: AnimatedSnackBarType.error,
                 mobileSnackBarPosition: MobileSnackBarPosition.top)
             .show(context);
-        // Fluttertoast.showToast(msg: e!.message);
       });
     }
   }
 }
-
-// login function

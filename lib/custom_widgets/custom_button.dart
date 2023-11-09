@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({
+    // Custom Button required arguments.
     Key? key,
     required this.onTap,
     required this.text,
@@ -11,6 +12,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Button Structure and properties.
     return Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(36.0),

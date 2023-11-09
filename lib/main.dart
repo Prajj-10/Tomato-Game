@@ -6,6 +6,7 @@ import 'package:tomato_game/pages/navigation.dart';
 import 'package:tomato_game/services/firebase_options.dart';
 
 Future<void> main() async {
+  // Initializing Firebase from the main.dart file.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.pink,
           ),
           debugShowCheckedModeBanner: false,
+          // Calls the navigation page to manage what page to be called.
           home: const Navigation(),
         ),
       );

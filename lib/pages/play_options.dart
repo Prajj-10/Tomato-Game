@@ -1,7 +1,6 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tomato_game/pages/classic_game.dart';
 import 'package:tomato_game/pages/time_challenge.dart';
@@ -17,32 +16,22 @@ class PlayOptions extends StatefulWidget {
 }
 
 class _PlayOptionsState extends State<PlayOptions> {
+  // Name is only created to make sure if the user is still logged in or not.
   var name;
 
+  // User Model to map data from Fire store.
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
-  void getDetails() async {
-    //final user = await FirebaseAuth.instance.currentUser;
-    //UserModel loggedInUser = UserModel();
-    //CookingStepsModel recipeList = new CookingStepsModel();
-    var userDetails = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid)
-        .get();
-
-    setState(() {
-      name = userDetails.data()!['name'];
-    });
-  }
-
   @override
   void initState() {
+    // Getting details as the page is being loaded.
     getDetails();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Phone Size
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
@@ -51,9 +40,11 @@ class _PlayOptionsState extends State<PlayOptions> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
             colors: [
+              // Gradient of the page.
               const Color(0xF29F9F).withOpacity(0.9),
               const Color(0xFAFAFA).withOpacity(1.0),
             ],
+            // Gradient Pattern
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           )),
@@ -126,5 +117,17 @@ class _PlayOptionsState extends State<PlayOptions> {
         ),
       ),
     );
+  }
+
+  // Getting details of the user from Firebase
+  void getDetails() async {
+    var userDetails = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .get();
+
+    setState(() {
+      name = userDetails.data()!['name'];
+    });
   }
 }

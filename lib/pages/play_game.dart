@@ -18,42 +18,25 @@ class PlayGame extends StatefulWidget {
 }
 
 class _PlayGameState extends State<PlayGame> {
+  // To get name from Firebase Firestore.
   var name;
 
+  // User Model to map data.
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
-  void getDetails() async {
-    //final user = await FirebaseAuth.instance.currentUser;
-    //UserModel loggedInUser = UserModel();
-    //CookingStepsModel recipeList = new CookingStepsModel();
-    var userDetails = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid)
-        .get();
-
-    setState(() {
-      name = userDetails.data()!['name'];
-    });
-  }
-
   @override
   void initState() {
+    // Called these functions when loading the page.
     getDetails();
     loggedIn();
   }
 
-  bool loggedIn() {
-    if (name != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Phone Size
     var size = MediaQuery.of(context).size;
+    // Ternary Operator to check if user is logged in or not.
     bool loggedIn = (name != null) ? true : false;
     return Scaffold(
       body: SafeArea(
@@ -62,9 +45,11 @@ class _PlayGameState extends State<PlayGame> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
             colors: [
+              // Linear Gradient Colours
               const Color(0xF29F9F).withOpacity(0.9),
               const Color(0xFAFAFA).withOpacity(1.0),
             ],
+            // Gradient Colour patterns
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           )),
@@ -180,13 +165,25 @@ class _PlayGameState extends State<PlayGame> {
       ),
     );
   }
-  /*void getData() async {
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      loggedInUser = UserModel.fromMap(value.data());
+
+  // Returns a bool value if the user is logged in or not.
+  bool loggedIn() {
+    if (name != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // Gets details from the Firebase if the user is already logged in.
+  void getDetails() async {
+    var userDetails = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .get();
+
+    setState(() {
+      name = userDetails.data()!['name'];
     });
-  }*/
+  }
 }

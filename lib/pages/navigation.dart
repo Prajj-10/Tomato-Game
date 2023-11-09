@@ -4,7 +4,7 @@ import 'package:tomato_game/pages/play_game.dart';
 
 class Navigation extends StatelessWidget {
   const Navigation({super.key});
-
+// The whole purpose of navigation is to navigate to respective page depending if the user is logged in or not.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

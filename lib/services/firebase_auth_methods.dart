@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/showSnackBar.dart';
+import '../custom_widgets/custom_snackbar.dart';
 
-class FirebaseAuthMethods{
+class FirebaseAuthMethods {
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
 
@@ -18,7 +18,6 @@ class FirebaseAuthMethods{
         email: email,
         password: password,
       );
-      //await sendEmailVerification(context);
     } on FirebaseAuthException catch (e) {
       // if you want to display your own custom error message
       if (e.code == 'weak-password') {

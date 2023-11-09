@@ -26,19 +26,24 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
 
   final _formKey = GlobalKey<FormState>();
 
+  // User Model to map data of the User.
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
+  // Google Sign In object.
   final googleSignIn = GoogleSignIn();
 
+  // late varible which gets initialized later
   late Future<QuestionAnswer?>? _futurequestion;
+
+  // Answer controller to receive answer
   TextEditingController ansController = TextEditingController();
 
-  // bool _isLoading = true;
   List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState() {
+    // Initializes Firebase and gets data in loggedinUser from user.
     super.initState();
     FirebaseFirestore.instance
         .collection("users")
@@ -53,18 +58,19 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
   }
 
   initfuture() {
+    // As asyncs can't be called in init, this is a workaround.
     _futurequestion = getData();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Phone Size
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
-          // title: const Text("Tomato Game"),
           leading: IconButton(
             color: Colors.red,
             onPressed: () {
@@ -78,9 +84,11 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [
+            // Gradient of the page.
             const Color(0xF29F9F).withOpacity(0.9),
             const Color(0xFAFAFA).withOpacity(1.0),
           ],
+          // Gradient Pattern
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )),
@@ -88,6 +96,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
             future: _futurequestion,
             builder: (BuildContext context,
                 AsyncSnapshot<QuestionAnswer?> snapshot) {
+              // Managing Data depending on what is received from the API.
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                   return Container(
@@ -117,16 +126,12 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
                           fontFamily: 'Electronic Highway Sign'),
                     )); // no data
                   } else {
-                    //ui
+                    //UI if the data is present
                     return Padding(
                       padding: const EdgeInsets.all(36.0),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            // Text("Welcome ${loggedInUser.name!}"),
-                            /*const SizedBox(
-                                  height: 20,
-                                ),*/
                             Row(
                               children: [
                                 Align(
@@ -211,8 +216,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
                             Center(
                                 child: CustomButton(
                               onTap: () {
-                                checkAnswer();
-                                //ansController.clear();
+                                checkAnswer(); // Function to check ans being called
                               },
                               text: 'Enter',
                             )),
@@ -229,6 +233,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     );
   }
 
+  // The main function that is being called to get data from API.
   QuestionAnswer? questionAns;
   Future<QuestionAnswer?> getData() async {
     try {
@@ -238,10 +243,10 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       return questionAns;
     } catch (e) {
       return null;
-      //  debugPrint(e.toString());
     }
   }
 
+  // Starts the game timer and shows the Game over dialog when the time is over.
   void _startGameTimer() {
     _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -250,15 +255,18 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         } else {
           _gameTimer.cancel();
           _showGameOverDialog();
-          // Implement logic to end the game here (e.g., show a game-over screen).
         }
       });
     });
   }
 
+  // Logs the user out from their account.
   Future<void> logout(BuildContext context) async {
+    // Clears the cache of the user
     await googleSignIn.currentUser?.clearAuthCache();
+    // Signs out from email/ password
     await FirebaseAuth.instance.signOut();
+    // Signs out from google
     await googleSignIn.signOut();
     AnimatedSnackBar.material(
       "Logged Out Sucessfully.",
@@ -266,18 +274,13 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       duration: const Duration(milliseconds: 1700),
       mobilePositionSettings: const MobilePositionSettings(
         topOnAppearance: 100,
-        // topOnDissapear: 50,
-        // bottomOnAppearance: 100,
-        //bottomOnDissapear: 50,
-        // left: 20,
-        // right: 70,
       ),
     );
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const PlayGame()));
-    // Fluttertoast.showToast(msg: "Logged Out Successfully.");
   }
 
+  // Checks for answer if it's correct or not.
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
     if (value == questionAns!.solution) {
@@ -288,11 +291,6 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         duration: const Duration(milliseconds: 1700),
         mobilePositionSettings: const MobilePositionSettings(
           topOnAppearance: 100,
-          // topOnDissapear: 50,
-          // bottomOnAppearance: 100,
-          //bottomOnDissapear: 50,
-          // left: 20,
-          // right: 70,
         ),
       ).show(context);
       setState(() {
@@ -301,9 +299,6 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         score++;
         _timeLeft += 5;
       });
-
-      // refreshData();
-      //Fluttertoast.showToast(msg: "Correct Answer");
     } else {
       AnimatedSnackBar.material(
         "Wrong Answer",
@@ -311,51 +306,41 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         duration: const Duration(milliseconds: 1700),
         mobilePositionSettings: const MobilePositionSettings(
           topOnAppearance: 100,
-          //topOnDissapear: 50,
-          // bottomOnAppearance: 100,
-          // bottomOnDissapear: 50,
-          // left: 20,
-          // right: 70,
         ),
       ).show(context);
       setState(() {
         ansController.clear();
         _timeLeft -= 1;
       });
-
-      // Fluttertoast.showToast(msg: "Wrong Answer");
     }
   }
 
   // Function to restart the game
   void _restartGame() {
-    // You can reset the game state, including score, timer, and other relevant data.
+    // Reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
       _timeLeft = 60; // Reset the timer to the initial time
     });
-
-    // Start the game timer again
+    // Starts the game again.
     _startGameTimer();
   }
 
   // Function to navigate to the home screen
   void _navigateToHomeScreen() {
-    // You can use Navigator to navigate to the home screen or any other desired screen.
+    // Navigator to navigate to the home screen or any other desired screen.
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const Navigation()), // Replace "HomeScreen" with your actual home screen widget.
+      MaterialPageRoute(builder: (context) => const Navigation()),
     );
   }
 
+  // Shows the game over dialog.
   void _showGameOverDialog() {
     showDialog(
       context: context,
       builder: (context) {
         return Container(
-          //height: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Color(0xF29F9F).withOpacity(0.9),
           ),
@@ -367,8 +352,6 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
               ),
               elevation: 10,
               title: Container(
-                //color: Color(0xF29F9F).withOpacity(0.9),
-                //height: MediaQuery.of(context).size.height / 6,
                 child: const Text(
                   "Game Over",
                   style: TextStyle(
