@@ -315,10 +315,6 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
   }
 
   postDetailsToFireStore() async {
-    // Calling Firestore
-    // Calling userModel
-    // Sending those values
-
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
     User? user = _auth.currentUser;

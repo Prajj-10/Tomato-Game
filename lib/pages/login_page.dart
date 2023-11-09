@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
-
 import '../Custom_Widgets/custom_button.dart';
 import 'navigation.dart';
 import 'signup.dart';
@@ -220,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>

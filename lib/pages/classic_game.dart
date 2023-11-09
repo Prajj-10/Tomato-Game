@@ -1,40 +1,40 @@
-import 'dart:async';
 import 'dart:convert';
+
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/pages/play_game.dart';
+
+import '../Custom_Widgets/custom_button.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
 import 'navigation.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ClassicGame extends StatefulWidget {
+  const ClassicGame({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ClassicGame> createState() => _ClassicGameState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int score = 0; // Initialize the score
-  late Timer _gameTimer;
-  int _timeLeft = 60; // Set the initial time in seconds
+class _ClassicGameState extends State<ClassicGame> {
+  int score = 0;
+  int round = 1;
+
+  final googleSignIn = GoogleSignIn();
 
   final _formKey = GlobalKey<FormState>();
 
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
-  final googleSignIn = GoogleSignIn();
-
   late Future<QuestionAnswer?>? _futurequestion;
   TextEditingController ansController = TextEditingController();
 
-  // bool _isLoading = true;
   List<QuestionAnswer> questionAnswer = [];
 
   @override
@@ -49,60 +49,10 @@ class _HomePageState extends State<HomePage> {
       setState(() {});
     });
     initfuture();
-    _startGameTimer();
   }
 
   initfuture() {
     _futurequestion = getData();
-  }
-
-  QuestionAnswer? questionAns;
-  Future<QuestionAnswer?> getData() async {
-    try {
-      String url = "https://marcconrad.com/uob/tomato/api.php";
-      http.Response res = await http.get(Uri.parse(url));
-      questionAns = QuestionAnswer.fromJson(json.decode(res.body));
-      return questionAns;
-    } catch (e) {
-      return null;
-      //  debugPrint(e.toString());
-    }
-  }
-
-  void _startGameTimer() {
-    _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_timeLeft > 0) {
-          _timeLeft--;
-        } else {
-          _gameTimer.cancel();
-          _showGameOverDialog();
-          // Implement logic to end the game here (e.g., show a game-over screen).
-        }
-      });
-    });
-  }
-
-  Future<void> logout(BuildContext context) async {
-    await googleSignIn.currentUser?.clearAuthCache();
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.signOut();
-    AnimatedSnackBar.material(
-      "Logged Out Sucessfully.",
-      type: AnimatedSnackBarType.success,
-      duration: const Duration(milliseconds: 1700),
-      mobilePositionSettings: const MobilePositionSettings(
-        topOnAppearance: 100,
-        // topOnDissapear: 50,
-        // bottomOnAppearance: 100,
-        //bottomOnDissapear: 50,
-        // left: 20,
-        // right: 70,
-      ),
-    );
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const PlayGame()));
-    // Fluttertoast.showToast(msg: "Logged Out Successfully.");
   }
 
   @override
@@ -113,6 +63,18 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.skip_next_sharp),
+              color: Colors.red,
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.help_outline_sharp),
+              color: Colors.red,
+            ),
+          ],
           // title: const Text("Tomato Game"),
           leading: IconButton(
             color: Colors.red,
@@ -181,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
-                                    "Time: $_timeLeft seconds",
+                                    "Round: $round",
                                     style: const TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
@@ -189,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 75,
+                                  width: 160,
                                 ),
                                 Align(
                                   alignment: Alignment.topRight,
@@ -278,6 +240,44 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  QuestionAnswer? questionAns;
+  Future<QuestionAnswer?> getData() async {
+    try {
+      String url = "https://marcconrad.com/uob/tomato/api.php";
+      http.Response res = await http.get(Uri.parse(url));
+      questionAns = QuestionAnswer.fromJson(json.decode(res.body));
+      return questionAns;
+    } catch (e) {
+      return null;
+      //  debugPrint(e.toString());
+    }
+  }
+
+  // Logs out user from the account.
+  Future<void> logout(BuildContext context) async {
+    await googleSignIn.currentUser?.clearAuthCache();
+    await FirebaseAuth.instance.signOut();
+    await googleSignIn.signOut();
+    AnimatedSnackBar.material(
+      "Logged Out Sucessfully.",
+      type: AnimatedSnackBarType.success,
+      duration: const Duration(milliseconds: 1700),
+      mobilePositionSettings: const MobilePositionSettings(
+        topOnAppearance: 100,
+        // topOnDissapear: 50,
+        // bottomOnAppearance: 100,
+        //bottomOnDissapear: 50,
+        // left: 20,
+        // right: 70,
+      ),
+    );
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Navigator()));
+    // Fluttertoast.showToast(msg: "Logged Out Successfully.");
+  }
+
+  // Checks answer with the api value.
+
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
     if (value == questionAns!.solution) {
@@ -299,7 +299,8 @@ class _HomePageState extends State<HomePage> {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
         score++;
-        _timeLeft += 5;
+        round++;
+        finishRounds();
       });
 
       // refreshData();
@@ -320,23 +321,28 @@ class _HomePageState extends State<HomePage> {
       ).show(context);
       setState(() {
         ansController.clear();
-        _timeLeft -= 1;
       });
 
       // Fluttertoast.showToast(msg: "Wrong Answer");
     }
   }
 
-  // Function to restart the game
+  // Is called when the game needs to be restarted.
+
   void _restartGame() {
     // You can reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
-      _timeLeft = 60; // Reset the timer to the initial time
+      round = 1; // Reset the timer to the initial time
     });
+  }
 
-    // Start the game timer again
-    _startGameTimer();
+  // Is used to check how many number of rounds have elapsed.
+
+  void finishRounds() {
+    if (round == 10) {
+      _showGameOverDialog();
+    }
   }
 
   // Function to navigate to the home screen
@@ -350,6 +356,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Function that shows the game over dialog.
   void _showGameOverDialog() {
     showDialog(
       context: context,

@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
-import 'package:tomato_game/pages/home_page.dart';
 import 'package:tomato_game/pages/login_page.dart';
+import 'package:tomato_game/pages/play_options.dart';
 
 import '../models/user_model.dart';
 
@@ -122,7 +122,7 @@ class _PlayGameState extends State<PlayGame> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const HomePage()));
+                            builder: (context) => const PlayOptions()));
                   }
                   // playGame();
                 },
@@ -152,7 +152,7 @@ class _PlayGameState extends State<PlayGame> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const LoginScreen()));
