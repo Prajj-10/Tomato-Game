@@ -22,7 +22,7 @@ class TimeChallengeGame extends StatefulWidget {
 class _TimeChallengeGameState extends State<TimeChallengeGame> {
   int score = 0; // Initialize the score
   late Timer _gameTimer;
-  int _timeLeft = 60; // Set the initial time in seconds
+  int _timeLeft = 120; // Set the initial time in seconds
 
   final _formKey = GlobalKey<FormState>();
 
@@ -71,6 +71,22 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _skipQuestion();
+              },
+              icon: Icon(Icons.skip_next_sharp),
+              color: Colors.red,
+            ),
+            IconButton(
+              onPressed: () {
+                _showHowToPlay();
+              },
+              icon: Icon(Icons.help_outline_sharp),
+              color: Colors.red,
+            ),
+          ],
           leading: IconButton(
             color: Colors.red,
             onPressed: () {
@@ -145,7 +161,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 75,
+                                  width: 63,
                                 ),
                                 Align(
                                   alignment: Alignment.topRight,
@@ -235,6 +251,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
 
   // The main function that is being called to get data from API.
   QuestionAnswer? questionAns;
+
   Future<QuestionAnswer?> getData() async {
     try {
       String url = "https://marcconrad.com/uob/tomato/api.php";
@@ -297,7 +314,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
         score++;
-        _timeLeft += 5;
+        _timeLeft += 10;
       });
     } else {
       AnimatedSnackBar.material(
@@ -310,7 +327,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       ).show(context);
       setState(() {
         ansController.clear();
-        _timeLeft -= 1;
+        _timeLeft -= 2;
       });
     }
   }
@@ -320,7 +337,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     // Reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
-      _timeLeft = 60; // Reset the timer to the initial time
+      _timeLeft = 120; // Reset the timer to the initial time
     });
     // Starts the game again.
     _startGameTimer();
@@ -406,5 +423,80 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         );
       },
     );
+  }
+
+  void _showHowToPlay() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Color(0xF29F9F).withOpacity(0.9),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              elevation: 10,
+              title: Container(
+                child: const Text(
+                  "How to Play: ",
+                  style: TextStyle(
+                      fontFamily: 'Electronic Highway Sign',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+              ),
+              content: Text(
+                "1.) Enter the missing number in the image.\n\n"
+                "2.) You have 120 seconds (2 minutes) in total.\n\n"
+                "3.) If you enter the correct answer, 10 seconds is added and the score is 2 points.\n\n"
+                "4.) For every wrong answer, 2 seconds is deducted and 1 point is deducted.\n\n"
+                "5.) You can skip the question if you want but this deducts 5 seconds.\n\n"
+                "\n"
+                "Let's start from the beginning.\n\n"
+                "All the best !",
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Electronic Highway Sign'),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.pop(context);
+
+                    // You can implement logic to restart the game here.
+                    setState(() {
+                      score = 0;
+                      _timeLeft = 120; // Reset the timer to the initial time
+                    });
+                  },
+                  child: const Text(
+                    "Okay",
+                    style: TextStyle(
+                        fontFamily: 'Electronic Highway Sign',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _skipQuestion() async {
+    QuestionAnswer? newQuestion = await getData();
+    setState(() {
+      questionAns = newQuestion;
+      ansController.clear(); // Clear the input field
+      _timeLeft -= 5;
+    });
   }
 }
