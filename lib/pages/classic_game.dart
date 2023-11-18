@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../Custom_Widgets/custom_button.dart';
+import '../google_authentication/google_sign_in.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
 import 'navigation.dart';
@@ -72,12 +74,16 @@ class _ClassicGameState extends State<ClassicGame> {
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _skipQuestion();
+              },
               icon: Icon(Icons.skip_next_sharp),
               color: Colors.red,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _showHowToPlay();
+              },
               icon: Icon(Icons.help_outline_sharp),
               color: Colors.red,
             ),
@@ -261,28 +267,32 @@ class _ClassicGameState extends State<ClassicGame> {
   }
 
   // Logs out user from the account.
+
   Future<void> logout(BuildContext context) async {
-    await googleSignIn.currentUser?.clearAuthCache();
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.signOut();
+    final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+    print(provider.googleSignIn.currentUser);
+    if (provider.googleSignIn.currentUser != null) {
+      // Clears the cache of the user
+      await provider.googleSignIn.currentUser?.clearAuthCache();
+      await provider.googleSignIn.disconnect();
+      // Signs out from google
+      await FirebaseAuth.instance.signOut();
+      await provider.googleSignIn.signOut();
+    } else {
+      // Signs out from email/ password
+      await FirebaseAuth.instance.signOut();
+    }
     AnimatedSnackBar.material(
       "Logged Out Sucessfully.",
       type: AnimatedSnackBarType.success,
       duration: const Duration(milliseconds: 1700),
       mobilePositionSettings: const MobilePositionSettings(
         topOnAppearance: 100,
-        // topOnDissapear: 50,
-        // bottomOnAppearance: 100,
-        //bottomOnDissapear: 50,
-        // left: 20,
-        // right: 70,
       ),
     );
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Navigator()));
-    // Fluttertoast.showToast(msg: "Logged Out Successfully.");
+        MaterialPageRoute(builder: (context) => const Navigation()));
   }
-
   // Checks answer with the api value.
 
   Future<void> checkAnswer() async {
@@ -300,7 +310,7 @@ class _ClassicGameState extends State<ClassicGame> {
       setState(() {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
-        score++;
+        score += 5;
         round++;
         finishRounds();
       });
@@ -316,6 +326,7 @@ class _ClassicGameState extends State<ClassicGame> {
         ),
       ).show(context);
       setState(() {
+        score -= 2;
         ansController.clear();
       });
 
@@ -421,5 +432,80 @@ class _ClassicGameState extends State<ClassicGame> {
         );
       },
     );
+  }
+
+  void _showHowToPlay() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Color(0xF29F9F).withOpacity(0.9),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              elevation: 10,
+              title: Container(
+                child: const Text(
+                  "How to Play: ",
+                  style: TextStyle(
+                      fontFamily: 'Electronic Highway Sign',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+              ),
+              content: Text(
+                "1.) Enter the missing number in the image.\n\n"
+                "2.) You have 10 rounds in total.\n\n"
+                "3.) If you enter the correct answer, you score 5 points.\n\n"
+                "4.) For every wrong answer, 2 points are deducted.\n\n"
+                "5.) You can skip the question but this skips the rounds.\n\n"
+                "\n"
+                "Let's start from the beginning.\n\n"
+                "All the best !",
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Electronic Highway Sign'),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.pop(context);
+
+                    // You can implement logic to restart the game here.
+                    setState(() {
+                      score = 0;
+                      round = 1; // Reset the timer to the initial time
+                    });
+                  },
+                  child: const Text(
+                    "Okay",
+                    style: TextStyle(
+                        fontFamily: 'Electronic Highway Sign',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _skipQuestion() async {
+    QuestionAnswer? newQuestion = await getData();
+    setState(() {
+      questionAns = newQuestion;
+      ansController.clear(); // Clear the input field
+      round += 1;
+    });
   }
 }

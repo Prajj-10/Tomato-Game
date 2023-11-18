@@ -6,8 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/pages/play_game.dart';
+import '../google_authentication/google_sign_in.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
 import 'navigation.dart';
@@ -23,6 +25,12 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
   int score = 0; // Initialize the score
   late Timer _gameTimer;
   int _timeLeft = 120; // Set the initial time in seconds
+
+  late Timer _countdownTimer;
+  int _countdown = 3;
+
+  late Timer _dialogTimer;
+  int _dialogCountdown = 3;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -53,6 +61,11 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      //startCountdown();
+      //_showGameDialog();
+    });
+
     initfuture();
     _startGameTimer();
   }
@@ -279,12 +292,19 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
 
   // Logs the user out from their account.
   Future<void> logout(BuildContext context) async {
-    // Clears the cache of the user
-    await googleSignIn.currentUser?.clearAuthCache();
-    // Signs out from email/ password
-    await FirebaseAuth.instance.signOut();
-    // Signs out from google
-    await googleSignIn.signOut();
+    final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+    print(provider.googleSignIn.currentUser);
+    if (provider.googleSignIn.currentUser != null) {
+      // Clears the cache of the user
+      await provider.googleSignIn.currentUser?.clearAuthCache();
+      await provider.googleSignIn.disconnect();
+      // Signs out from google
+      await FirebaseAuth.instance.signOut();
+      await provider.googleSignIn.signOut();
+    } else {
+      // Signs out from email/ password
+      await FirebaseAuth.instance.signOut();
+    }
     AnimatedSnackBar.material(
       "Logged Out Sucessfully.",
       type: AnimatedSnackBarType.success,
@@ -294,7 +314,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       ),
     );
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const PlayGame()));
+        MaterialPageRoute(builder: (context) => const Navigation()));
   }
 
   // Checks for answer if it's correct or not.
@@ -498,5 +518,43 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       ansController.clear(); // Clear the input field
       _timeLeft -= 5;
     });
+  }
+
+  void startCountdown() {
+    const oneSecond = Duration(seconds: 1);
+    _countdownTimer = Timer.periodic(oneSecond, (timer) {
+      setState(() {
+        if (_countdown > 1) {
+          _countdown--;
+        } else {
+          // If the countdown is finished, cancel the timer and start the game
+          _countdownTimer.cancel();
+          // TODO: Add code to start the game or load game content
+          // After countdown, show the game screen or do whatever is needed
+          Navigator.pop(context);
+        }
+      });
+    });
+  }
+
+  void _showGameDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent users from closing the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Game is starting in...'),
+          content: Center(
+            child: Text(
+              '$_countdown',
+              style: TextStyle(fontSize: 48),
+            ),
+          ),
+          actions: <Widget>[
+            // No action buttons in this case
+          ],
+        );
+      },
+    );
   }
 }
