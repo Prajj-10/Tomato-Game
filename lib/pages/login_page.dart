@@ -205,10 +205,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           context,
                           listen: false);
                       provider.googleLogin().whenComplete(() {
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Navigation()));
+                                builder: (context) => const Navigation()),
+                            (Route<dynamic> route) => false);
                       });
                     }, // <-- Icon,
                   ),
@@ -227,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
@@ -268,8 +269,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     topOnDissapear: 50,
                   ),
                 ).show(context),
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const Navigation()))
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Navigation()),
+                    (Route<dynamic> route) => false)
               })
           .catchError((e) {
         AnimatedSnackBar.material(e!.message,
