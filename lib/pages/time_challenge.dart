@@ -62,12 +62,11 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       setState(() {});
     });
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      //startCountdown();
-      //_showGameDialog();
+      startCountdown();
     });
 
     initfuture();
-    _startGameTimer();
+
   }
 
   initfuture() {
@@ -123,145 +122,162 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           )),
-          child: FutureBuilder<QuestionAnswer?>(
-              future: _futurequestion,
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuestionAnswer?> snapshot) {
-                // Managing Data depending on what is received from the API.
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                    return Container(
-                      child: Text(
-                        "Could not establish Connection.",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Electronic Highway Sign'),
-                      ),
-                    ); // error//
-                  case ConnectionState.waiting: //loading
-                    return const Center(
-                        child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: Center(child: CircularProgressIndicator()),
-                    ));
-                  case ConnectionState.done:
-                    if (snapshot.data == null) {
-                      return Center(
-                          child: const Text(
-                        "Could not fetch data from the API.",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Electronic Highway Sign'),
-                      )); // no data
-                    } else {
-                      //UI if the data is present
-                      return Padding(
-                        padding: const EdgeInsets.all(36.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Row(
+          child: Stack(
+            children: [
+
+              FutureBuilder<QuestionAnswer?>(
+                  future: _futurequestion,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuestionAnswer?> snapshot) {
+                    // Managing Data depending on what is received from the API.
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        return Container(
+                          child: Text(
+                            "Could not establish Connection.",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Electronic Highway Sign'),
+                          ),
+                        ); // error//
+                      case ConnectionState.waiting: //loading
+                        return const Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Center(child: CircularProgressIndicator()),
+                            ));
+                      case ConnectionState.done:
+                        if (snapshot.data == null) {
+                          return Center(
+                              child: const Text(
+                                "Could not fetch data from the API.",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Electronic Highway Sign'),
+                              )); // no data
+                        } else {
+                          //UI if the data is present
+                          return Padding(
+                            padding: const EdgeInsets.all(36.0),
+                            child: SingleChildScrollView(
+                              child: Column(
                                 children: [
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                      "Time: $_timeLeft seconds",
-                                      style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily:
+                                  Row(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          "Time: $_timeLeft seconds",
+                                          style: const TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily:
                                               'Electronic Highway Sign'),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 63,
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topRight,
+                                        child: Text(
+                                          "Score : $score",
+                                          //textAlign: TextAlign.start,
+                                          style: const TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily:
+                                              'Electronic Highway Sign'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 80,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Enter the correct number: ",
+                                      //textAlign: TextAlign.,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Electronic Highway Sign'),
                                     ),
                                   ),
                                   const SizedBox(
-                                    width: 63,
+                                    height: 20,
                                   ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "Score : $score",
-                                      //textAlign: TextAlign.start,
-                                      style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily:
-                                              'Electronic Highway Sign'),
+                                  Center(
+                                    child: Image.network(
+                                      questionAns!.question,
+                                      width: 400,
+                                      height: 250,
                                     ),
                                   ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Center(
+                                      child: Form(
+                                        key: _formKey,
+                                        child: TextFormField(
+                                          controller: ansController,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            hintText: "Enter a value",
+                                            hintStyle: TextStyle(
+                                                fontFamily: 'Electronic Highway Sign',
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (value) {
+                                            int? enteredValue = int.tryParse(value);
+                                            if (enteredValue != null) {
+                                              ansController.text =
+                                                  enteredValue.toString();
+                                            }
+                                          },
+                                          style: const TextStyle(fontSize: 15),
+                                        ),
+                                      )),
+                                  const SizedBox(
+                                    height: 25,
+                                  ),
+                                  Center(
+                                      child: CustomButton(
+                                        onTap: () {
+                                          checkAnswer(); // Function to check ans being called
+                                        },
+                                        text: 'Enter',
+                                      )),
                                 ],
                               ),
-                              const SizedBox(
-                                height: 80,
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Enter the correct number: ",
-                                  //textAlign: TextAlign.,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Electronic Highway Sign'),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: Image.network(
-                                  questionAns!.question,
-                                  width: 400,
-                                  height: 250,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                  child: Form(
-                                key: _formKey,
-                                child: TextFormField(
-                                  controller: ansController,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: "Enter a value",
-                                    hintStyle: TextStyle(
-                                        fontFamily: 'Electronic Highway Sign',
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    int? enteredValue = int.tryParse(value);
-                                    if (enteredValue != null) {
-                                      ansController.text =
-                                          enteredValue.toString();
-                                    }
-                                  },
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              )),
-                              const SizedBox(
-                                height: 25,
-                              ),
-                              Center(
-                                  child: CustomButton(
-                                onTap: () {
-                                  checkAnswer(); // Function to check ans being called
-                                },
-                                text: 'Enter',
-                              )),
-                            ],
-                          ),
-                        ),
-                      );
+                            ),
+                          );
+                        }
+                      default:
+                        return Container(); //error page
                     }
-                  default:
-                    return Container(); //error page
-                }
-              }),
+                  }),
+               _countdown==0?Container():Positioned(
+                 top: 0,left: 0,
+                 child: GestureDetector(
+                   onTap: (){
+                     //do nothing
+                   },
+                   child: Container(
+                       height:size.height ,width: size.width,
+                   color: Colors.transparent
+                   ,child: Center(child: Text(_countdown.toString(),style: TextStyle(fontSize: 60)))),
+                 )
+               )
+            ]
+          )
         ),
       ),
     );
@@ -591,37 +607,17 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     const oneSecond = Duration(seconds: 1);
     _countdownTimer = Timer.periodic(oneSecond, (timer) {
       setState(() {
-        if (_countdown > 1) {
+        if (_countdown >= 1) {
           _countdown--;
         } else {
           // If the countdown is finished, cancel the timer and start the game
           _countdownTimer.cancel();
-          // TODO: Add code to start the game or load game content
-          // After countdown, show the game screen or do whatever is needed
-          Navigator.pop(context);
+          _startGameTimer();
+
         }
       });
     });
   }
 
-  void _showGameDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent users from closing the dialog
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Game is starting in...'),
-          content: Center(
-            child: Text(
-              '$_countdown',
-              style: TextStyle(fontSize: 48),
-            ),
-          ),
-          actions: <Widget>[
-            // No action buttons in this case
-          ],
-        );
-      },
-    );
-  }
+
 }
