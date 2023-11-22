@@ -1,8 +1,10 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:provider/provider.dart';
+import 'package:tomato_game/custom_widgets/custom_loading.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
 import '../Custom_Widgets/custom_button.dart';
 import 'navigation.dart';
@@ -15,7 +17,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
   // Form Key to collect data and for validation.
   final _formKey = GlobalKey<FormState>();
 
@@ -28,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Firebase
   final _auth = FirebaseAuth.instance;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -41,21 +44,18 @@ class _LoginScreenState extends State<LoginScreen> {
         autofocus: false,
         controller: emailController,
         keyboardType: TextInputType.emailAddress,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return ("Please Enter Your Email");
+        validator: (email) {
+          if (isEmailValid(email!)) {
+            return null;
+          } else {
+            return 'Enter a valid email address';
           }
-          // reg expression for email validation
-          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-              .hasMatch(value)) {
-            return ("Please Enter a valid email");
-          }
-          return null;
         },
         onSaved: (value) {
           emailController.text = value!;
         },
         textInputAction: TextInputAction.next,
+        cursorColor: Colors.black,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.mail),
           contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -76,15 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
         autofocus: false,
         controller: passwordController,
         obscureText: !passwordVisible,
-        validator: (value) {
-          RegExp regex = RegExp(r'^.{6,}$');
-          if (value!.isEmpty) {
-            return ("Password is required for login");
+        validator: (password) {
+          if (isPasswordValid(password!)) {
+            return null;
+          } else {
+            return 'Enter a valid password';
           }
-          if (!regex.hasMatch(value)) {
-            return ("Password must be minimum 6 characters.");
-          }
-          return null;
         },
         onSaved: (value) {
           passwordController.text = value!;
@@ -200,11 +197,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       size: 24,
                     ),
                     onPressed: () {
+                      SmartDialog.showLoading(
+                        builder: (_) => CustomLoading(type: 2),
+                        maskColor: Colors.transparent,
+                        animationType: SmartAnimationType.scale,
+                        //msg: "Loading",
+                        backDismiss: false,
+                      );
                       // Function to sign up the user with Google.
                       final provider = Provider.of<GoogleSignInProvider>(
                           context,
                           listen: false);
                       provider.googleLogin().whenComplete(() {
+                        SmartDialog.dismiss();
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -254,31 +259,76 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Function to Sign in with Email and Pasword.
+  // Function to Sign in with Email and Password.
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {
-      await _auth
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((uid) => {
-                AnimatedSnackBar.material(
-                  "Login Successful",
-                  type: AnimatedSnackBarType.success,
-                  duration: const Duration(milliseconds: 1700),
-                  mobilePositionSettings: const MobilePositionSettings(
-                    topOnAppearance: 100,
-                    topOnDissapear: 50,
-                  ),
-                ).show(context),
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Navigation()),
-                    (Route<dynamic> route) => false)
-              })
-          .catchError((e) {
-        AnimatedSnackBar.material(e!.message,
+      SmartDialog.showLoading(
+        builder: (_) => CustomLoading(type: 2),
+        maskColor: Color(0xF29F9F).withOpacity(1.0),
+        animationType: SmartAnimationType.scale,
+        //msg: "Loading",
+        backDismiss: false,
+      );
+      try {
+        await _auth
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((uid) => {
+                  SmartDialog.dismiss(),
+                  AnimatedSnackBar.material(
+                    "Login Successful",
+                    type: AnimatedSnackBarType.success,
+                    duration: const Duration(milliseconds: 1700),
+                    mobilePositionSettings: const MobilePositionSettings(
+                      topOnAppearance: 100,
+                      topOnDissapear: 50,
+                    ),
+                  ).show(context),
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => const Navigation()),
+                      (Route<dynamic> route) => false),
+                });
+      } on FirebaseAuthException catch (error) {
+        switch (error.code) {
+          case "invalid-email":
+            errorMessage = "Your email address appears to be malformed.";
+            break;
+          case "wrong-password":
+            errorMessage = "Your password is wrong.";
+            break;
+          case "user-not-found":
+            errorMessage = "User with this email doesn't exist.";
+            break;
+          case "user-disabled":
+            errorMessage = "User with this email has been disabled.";
+            break;
+          case "too-many-requests":
+            errorMessage = "Too many requests";
+            break;
+          case "operation-not-allowed":
+            errorMessage = "Signing in with Email and Password is not enabled.";
+            break;
+          default:
+            errorMessage = "An undefined Error happened.";
+        }
+        AnimatedSnackBar.material(errorMessage!,
                 type: AnimatedSnackBarType.error,
-                mobileSnackBarPosition: MobileSnackBarPosition.top)
+                mobileSnackBarPosition: MobileSnackBarPosition.top,
+                desktopSnackBarPosition: DesktopSnackBarPosition.topRight)
             .show(context);
-      });
+        // print(error.code);
+      }
     }
+  }
+}
+
+mixin InputValidationMixin {
+  bool isPasswordValid(String password) => password.length >= 6;
+
+  bool isEmailValid(String email) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(email);
   }
 }

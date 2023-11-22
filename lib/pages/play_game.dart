@@ -4,11 +4,16 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:provider/provider.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import 'package:tomato_game/pages/login_page.dart';
 import 'package:tomato_game/pages/play_options.dart';
 
+import '../custom_widgets/custom_loading.dart';
+import '../google_authentication/google_sign_in.dart';
 import '../models/user_model.dart';
+import 'navigation.dart';
 
 class PlayGame extends StatefulWidget {
   const PlayGame({super.key});
@@ -223,7 +228,24 @@ class _PlayGameState extends State<PlayGame> {
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Electronic Highway Sign'),
                       ),
-                    ])
+                    ]),
+                SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _showLogoutDialog();
+                    //logout(context);
+                  },
+                  child: Text(
+                    "Logout? ",
+                    style: TextStyle(
+                        color: Color(0xF29F9F).withOpacity(1.0),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily: 'Electronic Highway Sign'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -251,5 +273,129 @@ class _PlayGameState extends State<PlayGame> {
     setState(() {
       name = userDetails.data()!['name'];
     });
+  }
+
+  void _showLogoutDialog() {
+    if (name != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Color(0xF29F9F).withOpacity(0.9),
+            ),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+              child: AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                elevation: 10,
+                title: Container(
+                  child: const Text(
+                    "Log Out",
+                    style: TextStyle(
+                        fontFamily: 'Electronic Highway Sign',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                ),
+                content: Text(
+                  "Are you sure you want to logout?",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Electronic Highway Sign'),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      // Close the dialog
+                      Navigator.pop(context);
+
+                      // You can implement logic to restart the game here.
+                      logout(context);
+                    },
+                    child: const Text(
+                      "Yes",
+                      style: TextStyle(
+                          fontFamily: 'Electronic Highway Sign',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Close the dialog
+                      Navigator.pop(context);
+
+                      // You can implement logic to navigate to the home screen here.
+                    },
+                    child: const Text(
+                      "No",
+                      style: TextStyle(
+                          fontFamily: 'Electronic Highway Sign',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      Text("User Not logged in");
+      AnimatedSnackBar.material(
+        "No user is logged in.",
+        type: AnimatedSnackBarType.error,
+        //duration: const Duration(milliseconds: 1700),
+        mobilePositionSettings: const MobilePositionSettings(
+          topOnAppearance: 100,
+        ),
+      );
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    var provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+    print(provider.googleSignIn.currentUser);
+    if (provider.googleSignIn.currentUser != null) {
+      SmartDialog.showLoading(
+        builder: (_) => CustomLoading(type: 2),
+        maskColor: Color(0xF29F9F).withOpacity(1.0),
+        animationType: SmartAnimationType.scale,
+        //msg: "Loading",
+        backDismiss: false,
+      );
+      // Clears the cache of the user
+      await provider.googleSignIn.currentUser?.clearAuthCache();
+      await provider.googleSignIn.disconnect();
+      // Signs out from google
+      await FirebaseAuth.instance.signOut();
+      await provider.googleSignIn.signOut();
+    } else {
+      SmartDialog.showLoading(
+        builder: (_) => CustomLoading(type: 2),
+        maskColor: Color(0xF29F9F).withOpacity(1.0),
+        animationType: SmartAnimationType.scale,
+        //msg: "Loading",
+        backDismiss: false,
+      );
+      // Signs out from email/ password
+      await FirebaseAuth.instance.signOut();
+    }
+    SmartDialog.dismiss();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Navigation()));
+    AnimatedSnackBar.material(
+      "Logged Out Sucessfully.",
+      type: AnimatedSnackBarType.success,
+      duration: const Duration(milliseconds: 1700),
+      mobilePositionSettings: const MobilePositionSettings(
+        topOnAppearance: 100,
+      ),
+    );
   }
 }

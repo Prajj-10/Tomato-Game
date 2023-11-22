@@ -15,7 +15,8 @@ class EmailPasswordSignup extends StatefulWidget {
   _EmailPasswordSignupState createState() => _EmailPasswordSignupState();
 }
 
-class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
+class _EmailPasswordSignupState extends State<EmailPasswordSignup>
+    with InputValidationMixin {
   // Firebase Auth instance
   final _auth = FirebaseAuth.instance;
 
@@ -32,6 +33,8 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
 
   late bool passwordVisible;
 
+  String? errorMessage;
+
   @override
   void initState() {
     // Initially the password is hidden.
@@ -44,15 +47,12 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         autofocus: false,
         controller: nameController,
         keyboardType: TextInputType.name,
-        validator: (value) {
-          RegExp regex = RegExp(r'^.{3,}$');
-          if (value!.isEmpty) {
-            return ("Name cannot be Empty");
+        validator: (name) {
+          if (isNameValid(name!)) {
+            return null;
+          } else {
+            return 'Enter a valid name containing at least 6 characters.';
           }
-          if (!regex.hasMatch(value)) {
-            return ("Enter a Valid name(Min. 3 Character)");
-          }
-          return null;
         },
         onSaved: (value) {
           nameController.text = value!;
@@ -77,16 +77,12 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         autofocus: false,
         controller: emailController,
         keyboardType: TextInputType.emailAddress,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return ("Please Enter Your Email");
+        validator: (email) {
+          if (isEmailValid(email!)) {
+            return null;
+          } else {
+            return 'Enter a valid email address.';
           }
-          // reg expression for email validation
-          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-              .hasMatch(value)) {
-            return ("Please Enter a valid email");
-          }
-          return null;
         },
         onSaved: (value) {
           emailController.text = value!;
@@ -111,15 +107,18 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         autofocus: false,
         controller: passwordController,
         obscureText: !passwordVisible,
-        validator: (value) {
-          RegExp regex = RegExp(r'^.{6,}$');
-          if (value!.isEmpty) {
-            return ("Password is required for login");
+        validator: (password) {
+          if (passwordStructure(password!)) {
+            return null;
+          } else {
+            return 'Enter a valid password. \n'
+                'Password must contain: \n'
+                '1.) One upper case \n'
+                '2.) One lower case \n'
+                '3.) One numeric number \n'
+                '4.) One special character \n'
+                '5.) Minimum 8 characters \n';
           }
-          if (!regex.hasMatch(value)) {
-            return ("Enter Valid Password(Min. 6 Character)");
-          }
-          return null;
         },
         onSaved: (value) {
           passwordController.text = value!;
@@ -191,65 +190,67 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xF29F9F).withOpacity(0.9),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
+          backgroundColor: Color(0xF29F9F).withOpacity(0.9),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_outlined),
             color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: Container(
-        height: size.height,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          colors: [
-            const Color(0xF29F9F).withOpacity(0.9),
-            const Color(0xFAFAFA).withOpacity(1.0),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        )),
-        child: Padding(
-          padding: const EdgeInsets.all(36.0),
-          child: Form(
-            key: _formKey,
-            child: Center(
-              child: Column(
-                // Shows the Text Fields in the center
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                        fontSize: 30,
-                        fontFamily: 'Electronic Highway Sign',
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.08),
-                  nameField(),
-                  const SizedBox(height: 20),
-                  emailField(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  passwordField(),
-                  const SizedBox(height: 20),
-                  confirmPasswordField(),
-                  const SizedBox(height: 40),
-                  CustomButton(
-                    onTap: () {
-                      signUp(emailController.text, passwordController.text);
-                    },
-                    text: 'Sign Up',
-                  ),
-                  const SizedBox(height: 20),
-                ],
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
+      body: SingleChildScrollView(
+        child: Container(
+          //height: size.height,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            colors: [
+              const Color(0xF29F9F).withOpacity(0.9),
+              const Color(0xFAFAFA).withOpacity(1.0),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )),
+          child: Padding(
+            padding: const EdgeInsets.all(36.0),
+            child: Form(
+              key: _formKey,
+              child: Center(
+                child: Column(
+                  // Shows the Text Fields in the center
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 70,
+                    ),
+                    const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontFamily: 'Electronic Highway Sign',
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+                    nameField(),
+                    const SizedBox(height: 20),
+                    emailField(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    passwordField(),
+                    const SizedBox(height: 20),
+                    confirmPasswordField(),
+                    const SizedBox(height: 40),
+                    CustomButton(
+                      onTap: () {
+                        signUp(emailController.text, passwordController.text);
+                      },
+                      text: 'Sign Up',
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -308,5 +309,23 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
         (route) => false);
+  }
+}
+
+mixin InputValidationMixin {
+  bool isNameValid(String name) => name.length >= 6 && name.isNotEmpty;
+
+  bool passwordStructure(String value) {
+    String pattern =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+    RegExp regExp = RegExp(pattern);
+    return regExp.hasMatch(value);
+  }
+
+  bool isEmailValid(String email) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(email);
   }
 }
