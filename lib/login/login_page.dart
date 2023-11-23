@@ -6,9 +6,9 @@ import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/custom_widgets/custom_loading.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
-import '../Custom_Widgets/custom_button.dart';
-import 'navigation.dart';
-import 'signup.dart';
+import '../../Custom_Widgets/custom_button.dart';
+import '../../navigation_handler/navigation.dart';
+import '../registration/signup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

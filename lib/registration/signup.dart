@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../Custom_Widgets/custom_button.dart';
-import 'login_page.dart';
-import '../models/user_model.dart';
+import '../../Custom_Widgets/custom_button.dart';
+import '../login/login_page.dart';
+import '../../models/user_model.dart';
 
 class EmailPasswordSignup extends StatefulWidget {
   // static String routeName = '/signup.dart';   // The routes are created at main.dart to route the pages properly.

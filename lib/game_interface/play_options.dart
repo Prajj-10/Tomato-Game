@@ -2,11 +2,10 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tomato_game/pages/classic_game.dart';
-import 'package:tomato_game/pages/time_challenge.dart';
-
-import '../Custom_Widgets/custom_button.dart';
-import '../models/user_model.dart';
+import 'package:tomato_game/game_modes/classic_game.dart';
+import '../../Custom_Widgets/custom_button.dart';
+import '../../game_modes/time_challenge.dart';
+import '../../models/user_model.dart';
 
 class PlayOptions extends StatefulWidget {
   const PlayOptions({super.key});

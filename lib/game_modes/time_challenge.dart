@@ -11,7 +11,7 @@ import 'package:tomato_game/Custom_Widgets/custom_button.dart';
 import '../google_authentication/google_sign_in.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
-import 'navigation.dart';
+import '../navigation_handler/navigation.dart';
 
 class TimeChallengeGame extends StatefulWidget {
   const TimeChallengeGame({super.key});
@@ -78,31 +78,32 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Color(0xF29F9F).withOpacity(0.9),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  _skipQuestion();
-                },
-                icon: Icon(Icons.skip_next_sharp),
-                color: Colors.red,
-              ),
-              IconButton(
-                onPressed: () {
-                  _showHowToPlay();
-                },
-                icon: Icon(Icons.help_outline_sharp),
-                color: Colors.red,
-              ),
-            ],
-            leading: IconButton(
+          elevation: 0,
+          backgroundColor: Color(0xF29F9F).withOpacity(0.9),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _skipQuestion();
+              },
+              icon: Icon(Icons.skip_next_sharp),
+              color: Colors.red,
+            ),
+            IconButton(
+              onPressed: () {
+                _showHowToPlay();
+              },
+              icon: Icon(Icons.help_outline_sharp),
+              color: Colors.red,
+            ),
+          ],
+          /*leading: IconButton(
               color: Colors.red,
               onPressed: () {
                 logout(context);
               },
               icon: const Icon(Icons.logout_outlined),
-            )),
+            )*/
+        ),
         body: //future builder
             Container(
                 height: size.height,
@@ -671,5 +672,13 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
           .doc(currentUser?.uid)
           .set({'highest_score': score}, SetOptions(merge: true));
     }
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timers when the widget is disposed to avoid memory leaks
+    _countdownTimer.cancel();
+    _gameTimer.cancel();
+    super.dispose();
   }
 }

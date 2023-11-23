@@ -4,9 +4,15 @@ class UserModel {
   String? email;
   String? password;
   int? highestScore;
+  int? highestScoreClassic;
 
   UserModel(
-      {this.uid, this.name, this.email, this.password, this.highestScore});
+      {this.uid,
+      this.name,
+      this.email,
+      this.password,
+      this.highestScore,
+      this.highestScoreClassic});
 
   // receiving data from the server
 
@@ -17,6 +23,7 @@ class UserModel {
       email: map['email'],
       password: map['password'],
       highestScore: map['highest_score'],
+      highestScoreClassic: map['highest_score_classic'],
     );
   }
 
@@ -29,6 +36,7 @@ class UserModel {
       'email': email,
       'password': password,
       'highest_score': highestScore,
+      'highest_score_classic': highestScoreClassic,
     };
   }
 }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/google_authentication/google_sign_in.dart';
-import 'package:tomato_game/pages/navigation.dart';
-import 'package:tomato_game/services/firebase_options.dart';
+import 'package:tomato_game/navigation_handler/navigation.dart';
+import 'firebase_services/firebase_options.dart';
 
 Future<void> main() async {
   // Initializing Firebase from the main.dart file.

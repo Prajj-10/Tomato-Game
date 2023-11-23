@@ -7,13 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
-import 'package:tomato_game/pages/login_page.dart';
-import 'package:tomato_game/pages/play_options.dart';
-
-import '../custom_widgets/custom_loading.dart';
-import '../google_authentication/google_sign_in.dart';
-import '../models/user_model.dart';
-import 'navigation.dart';
+import 'package:tomato_game/game_interface/play_options.dart';
+import '../../custom_widgets/custom_loading.dart';
+import '../../google_authentication/google_sign_in.dart';
+import '../../models/user_model.dart';
+import '../../navigation_handler/navigation.dart';
+import '../login/login_page.dart';
 
 class PlayGame extends StatefulWidget {
   const PlayGame({super.key});
