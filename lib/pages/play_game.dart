@@ -312,8 +312,6 @@ class _PlayGameState extends State<PlayGame> {
                     onPressed: () {
                       // Close the dialog
                       Navigator.pop(context);
-
-                      // You can implement logic to restart the game here.
                       logout(context);
                     },
                     child: const Text(
@@ -328,8 +326,6 @@ class _PlayGameState extends State<PlayGame> {
                     onPressed: () {
                       // Close the dialog
                       Navigator.pop(context);
-
-                      // You can implement logic to navigate to the home screen here.
                     },
                     child: const Text(
                       "No",
@@ -359,7 +355,7 @@ class _PlayGameState extends State<PlayGame> {
   }
 
   Future<void> logout(BuildContext context) async {
-    var provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+    final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
     print(provider.googleSignIn.currentUser);
     if (provider.googleSignIn.currentUser != null) {
       SmartDialog.showLoading(
@@ -375,6 +371,19 @@ class _PlayGameState extends State<PlayGame> {
       // Signs out from google
       await FirebaseAuth.instance.signOut();
       await provider.googleSignIn.signOut();
+      SmartDialog.dismiss();
+      AnimatedSnackBar.material(
+        "Logged Out Sucessfully.",
+        type: AnimatedSnackBarType.success,
+        duration: const Duration(milliseconds: 1700),
+        mobilePositionSettings: const MobilePositionSettings(
+          topOnAppearance: 100,
+        ),
+      );
+      Navigator.of(context).reassemble();
+      /*Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Navigation()),
+          (Route<dynamic> route) => false);*/
     } else {
       SmartDialog.showLoading(
         builder: (_) => CustomLoading(type: 2),
@@ -385,17 +394,18 @@ class _PlayGameState extends State<PlayGame> {
       );
       // Signs out from email/ password
       await FirebaseAuth.instance.signOut();
+      AnimatedSnackBar.material(
+        "Logged Out Sucessfully.",
+        type: AnimatedSnackBarType.success,
+        duration: const Duration(milliseconds: 1700),
+        mobilePositionSettings: const MobilePositionSettings(
+          topOnAppearance: 100,
+        ),
+      );
+      SmartDialog.dismiss();
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Navigation()),
+          (Route<dynamic> route) => false);
     }
-    SmartDialog.dismiss();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Navigation()));
-    AnimatedSnackBar.material(
-      "Logged Out Sucessfully.",
-      type: AnimatedSnackBarType.success,
-      duration: const Duration(milliseconds: 1700),
-      mobilePositionSettings: const MobilePositionSettings(
-        topOnAppearance: 100,
-      ),
-    );
   }
 }

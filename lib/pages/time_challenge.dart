@@ -8,7 +8,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:tomato_game/Custom_Widgets/custom_button.dart';
-import 'package:tomato_game/pages/play_game.dart';
 import '../google_authentication/google_sign_in.dart';
 import '../models/api_model.dart';
 import '../models/user_model.dart';
@@ -28,9 +27,6 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
 
   late Timer _countdownTimer;
   int _countdown = 3;
-
-  late Timer _dialogTimer;
-  int _dialogCountdown = 3;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -308,6 +304,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
           _timeLeft--;
         } else {
           _gameTimer.cancel();
+          _saveScore();
           _showGameOverDialog();
         }
       });
@@ -458,8 +455,18 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         false;
   }
 
+  bool highscore() {
+    if (score >= loggedInUser.highestScore!) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // Shows the game over dialog.
   void _showGameOverDialog() {
+    // Ternary Operator Magic
+    bool highscore = (score >= loggedInUser.highestScore!) ? true : false;
     showDialog(
       context: context,
       builder: (context) {
@@ -483,12 +490,34 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
                       fontSize: 20),
                 ),
               ),
-              content: Text(
-                "Your final score: $score",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Electronic Highway Sign'),
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Your final score: $score",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Electronic Highway Sign'),
+                  ),
+                  Center(
+                      child: highscore
+                          ? Text(
+                              'Your high score : $score',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Electronic Highway Sign'),
+                            )
+                          : Text(
+                              "Your high score : ${loggedInUser.highestScore}",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Electronic Highway Sign'),
+                            )),
+                ],
               ),
               actions: <Widget>[
                 TextButton(
@@ -619,5 +648,28 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         }
       });
     });
+  }
+
+  Future<void> _saveScore() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      loggedInUser = UserModel.fromMap(value.data());
+    });
+    if (loggedInUser.highestScore == null) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUser?.uid)
+          .set({'highest_score': 0}, SetOptions(merge: true));
+    }
+    if (score >= loggedInUser.highestScore!) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUser?.uid)
+          .set({'highest_score': score}, SetOptions(merge: true));
+    }
   }
 }
