@@ -355,7 +355,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       setState(() {
         questionAns = newQuestion;
         ansController.clear(); // Clear the input field
-        score++;
+        score += 2;
         _timeLeft += 10;
       });
     } else {

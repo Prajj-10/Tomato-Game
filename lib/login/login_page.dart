@@ -198,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
                     ),
                     onPressed: () {
                       SmartDialog.showLoading(
+                        msg: "Logging In...",
                         builder: (_) => CustomLoading(type: 2),
                         maskColor: Colors.transparent,
                         animationType: SmartAnimationType.scale,
@@ -263,6 +264,7 @@ class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       SmartDialog.showLoading(
+        msg: "Logging In...",
         builder: (_) => CustomLoading(type: 2),
         maskColor: Color(0xF29F9F).withOpacity(1.0),
         animationType: SmartAnimationType.scale,

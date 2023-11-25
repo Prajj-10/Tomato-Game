@@ -358,6 +358,7 @@ class _PlayGameState extends State<PlayGame> {
     print(provider.googleSignIn.currentUser);
     if (provider.googleSignIn.currentUser != null) {
       SmartDialog.showLoading(
+        msg: "Logging out...",
         builder: (_) => CustomLoading(type: 2),
         maskColor: Color(0xF29F9F).withOpacity(1.0),
         animationType: SmartAnimationType.scale,
@@ -385,6 +386,7 @@ class _PlayGameState extends State<PlayGame> {
           (Route<dynamic> route) => false);*/
     } else {
       SmartDialog.showLoading(
+        msg: "Logging out...",
         builder: (_) => CustomLoading(type: 2),
         maskColor: Color(0xF29F9F).withOpacity(1.0),
         animationType: SmartAnimationType.scale,
