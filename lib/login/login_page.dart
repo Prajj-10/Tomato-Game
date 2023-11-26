@@ -10,6 +10,7 @@ import '../../Custom_Widgets/custom_button.dart';
 import '../../navigation_handler/navigation.dart';
 import '../registration/signup.dart';
 
+/// A screen for user login.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -324,6 +325,7 @@ class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
   }
 }
 
+/// A mixin for input validation.
 mixin InputValidationMixin {
   bool isPasswordValid(String password) => password.length >= 6;
 

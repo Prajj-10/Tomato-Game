@@ -7,6 +7,7 @@ import '../../Custom_Widgets/custom_button.dart';
 import '../../game_modes/time_challenge.dart';
 import '../../models/user_model.dart';
 
+/// The screen to select game options.
 class PlayOptions extends StatefulWidget {
   const PlayOptions({super.key});
 
@@ -118,7 +119,7 @@ class _PlayOptionsState extends State<PlayOptions> {
     );
   }
 
-  // Getting details of the user from Firebase
+  /// Getting details of the user from Firebase
   void getDetails() async {
     var userDetails = await FirebaseFirestore.instance
         .collection('users')

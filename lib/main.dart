@@ -6,6 +6,7 @@ import 'package:tomato_game/google_authentication/google_sign_in.dart';
 import 'package:tomato_game/navigation_handler/navigation.dart';
 import 'firebase_services/firebase_options.dart';
 
+/// The main function initializes the Flutter application.
 Future<void> main() async {
   // Initializing Firebase from the main.dart file.
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +16,10 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+/// The root widget of the application.
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  /// Default constructor for the [MyApp] widget.
+  const MyApp({Key? key});
 
   // This widget is the root of your application.
   @override

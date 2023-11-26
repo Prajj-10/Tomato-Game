@@ -5,15 +5,17 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/user_model.dart';
 
+/// A provider class for managing Google Sign-In functionality and user authentication.
 class GoogleSignInProvider extends ChangeNotifier {
   final googleSignIn = GoogleSignIn();
   final usersRef = FirebaseFirestore.instance.collection('users');
 
   GoogleSignInAccount? _user;
 
+  /// Gets the current Google user account.
   GoogleSignInAccount get user => _user!;
 
-// Logs in user with Google authentication
+  /// Logs in the user with Google authentication.
   Future googleLogin() async {
     try {
       final googleUser = await googleSignIn.signIn();
@@ -39,14 +41,16 @@ class GoogleSignInProvider extends ChangeNotifier {
     createUserInFirestore();
   }
 
+  /// Logs out the user.
   Future logout() async {
     await googleSignIn.currentUser?.clearAuthCache();
     await FirebaseAuth.instance.signOut();
     await googleSignIn.signOut();
   }
 
+  /// Creates a user in Firestore if it doesn't exist.
   createUserInFirestore() async {
-    // check if user exists in the users collection.
+    // check if the user exists in the users collection.
     final GoogleSignInAccount? user = googleSignIn.currentUser;
     final currentUser = FirebaseAuth.instance.currentUser;
     final DocumentSnapshot doc = await usersRef.doc(currentUser?.uid).get();

@@ -2,9 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../game_interface/play_game.dart';
 
+/// The [Navigation] widget is responsible for navigating to the respective page
+/// depending on whether the user is logged in or not.
 class Navigation extends StatelessWidget {
-  const Navigation({super.key});
-// The whole purpose of navigation is to navigate to respective page depending if the user is logged in or not.
+  /// Default constructor for the [Navigation] widget.
+  const Navigation({Key? key});
+
+  /// The build method for constructing the UI of the [Navigation] widget.
   @override
   Widget build(BuildContext context) {
     return Scaffold(

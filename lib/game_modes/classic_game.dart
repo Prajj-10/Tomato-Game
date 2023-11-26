@@ -13,6 +13,7 @@ import '../models/api_model.dart';
 import '../models/user_model.dart';
 import '../navigation_handler/navigation.dart';
 
+/// The screen for the Classic Game mode.
 class ClassicGame extends StatefulWidget {
   const ClassicGame({super.key});
 
@@ -21,34 +22,35 @@ class ClassicGame extends StatefulWidget {
 }
 
 class _ClassicGameState extends State<ClassicGame> {
-  // Initial Score and Round of the user.
+  /// Initial Score and Round of the user.
   int score = 0;
   int round = 1;
 
   late Timer _countdownTimer;
   int _countdown = 3;
 
-  // Google Sign-In object.
+  /// Google Sign-In object.
   final googleSignIn = GoogleSignIn();
 
-  // Form Key for validation.
+  /// Form Key for validation.
   final _formKey = GlobalKey<FormState>();
 
-  // User Model for data extraction
+  /// User Model for data extraction
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
-  // Future of the API function.
+  /// Future of the API function.
   late Future<QuestionAnswer?>? _futurequestion;
   TextEditingController ansController = TextEditingController();
 
-  // A list to get data from the API.
+  /// A list to get data from the API.
   List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState() {
     super.initState();
-    // Firebase is initialized at first for data.
+
+    /// Firebase is initialized at first for data.
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
@@ -60,7 +62,8 @@ class _ClassicGameState extends State<ClassicGame> {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       startCountdown();
     });
-    // Function of the API.
+
+    /// Function of the API.
     initfuture();
   }
 
@@ -70,14 +73,15 @@ class _ClassicGameState extends State<ClassicGame> {
 
   @override
   Widget build(BuildContext context) {
-    // Phone Size
+    /// Phone Size
     var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        // Main Background
+        /// Main Background
         backgroundColor: Color(0xF29F9F).withOpacity(0.9),
-        // Top Bar
+
+        /// Top Bar
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xF29F9F).withOpacity(0.9),
@@ -104,15 +108,17 @@ class _ClassicGameState extends State<ClassicGame> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
             colors: [
-              // Gradient present in the page.
+              /// Gradient present in the page.
               const Color(0xF29F9F).withOpacity(0.9),
               const Color(0xFAFAFA).withOpacity(1.0),
             ],
-            // Flow of the Gradient colour.
+
+            /// Flow of the Gradient colour.
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           )),
-          // Future Builder to handle the call of the API.
+
+          /// Future Builder to handle the call of the API.
           child: Stack(
             children: [
               FutureBuilder<QuestionAnswer?>(
@@ -135,7 +141,8 @@ class _ClassicGameState extends State<ClassicGame> {
                             child: SizedBox(
                           height: 50,
                           width: 50,
-                          // Loading Screen
+
+                          /// Loading Screen
                           child: Center(child: CircularProgressIndicator()),
                         ));
                       case ConnectionState.done:
@@ -147,9 +154,11 @@ class _ClassicGameState extends State<ClassicGame> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Electronic Highway Sign'),
-                          )); // no data
+                          ));
+
+                          /// no data
                         } else {
-                          //Main UI.
+                          ///Main UI.
                           return Padding(
                             padding: const EdgeInsets.all(36.0),
                             child: SingleChildScrollView(
@@ -281,6 +290,8 @@ class _ClassicGameState extends State<ClassicGame> {
     );
   }
 
+  /// Other methods, such as startCountdown, getData, checkAnswer, _skipQuestion, _onWillPop, _navigateToHomeScreen, _showGameOverDialog, _showHowToPlay, _saveScore, and highscore.
+
   void startCountdown() {
     const oneSecond = Duration(seconds: 1);
     _countdownTimer = Timer.periodic(oneSecond, (timer) {
@@ -288,14 +299,14 @@ class _ClassicGameState extends State<ClassicGame> {
         if (_countdown >= 1) {
           _countdown--;
         } else {
-          // If the countdown is finished, cancel the timer and start the game
+          /// If the countdown is finished, cancel the timer and start the game
           _countdownTimer.cancel();
         }
       });
     });
   }
 
-  // Main function of the API too get data.
+  /// Main function of the API too get data.
   QuestionAnswer? questionAns;
   Future<QuestionAnswer?> getData() async {
     try {
@@ -309,20 +320,21 @@ class _ClassicGameState extends State<ClassicGame> {
     }
   }
 
-  // Logs out user from the account.
+  /// Logs out user from the account.
 
   Future<void> logout(BuildContext context) async {
     final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
     print(provider.googleSignIn.currentUser);
     if (provider.googleSignIn.currentUser != null) {
-      // Clears the cache of the user
+      /// Clears the cache of the user
       await provider.googleSignIn.currentUser?.clearAuthCache();
       await provider.googleSignIn.disconnect();
-      // Signs out from google
+
+      /// Signs out from google
       await FirebaseAuth.instance.signOut();
       await provider.googleSignIn.signOut();
     } else {
-      // Signs out from email/ password
+      /// Signs out from email/ password
       await FirebaseAuth.instance.signOut();
     }
     AnimatedSnackBar.material(
@@ -336,7 +348,8 @@ class _ClassicGameState extends State<ClassicGame> {
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const Navigation()));
   }
-  // Checks answer with the api value.
+
+  /// Checks answer with the api value.
 
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
@@ -358,7 +371,7 @@ class _ClassicGameState extends State<ClassicGame> {
       });
       finishRounds();
 
-      // refreshData();
+      /// refreshData();
     } else {
       AnimatedSnackBar.material(
         "Wrong Answer",
@@ -377,17 +390,17 @@ class _ClassicGameState extends State<ClassicGame> {
     }
   }
 
-  // Is called when the game needs to be restarted.
+  /// Is called when the game needs to be restarted.
 
   void _restartGame() {
-    // Reset the game state, including score, timer, and other relevant data.
+    /// Reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
       round = 1; // Reset the timer to the initial time
     });
   }
 
-  // Is used to check how many number of rounds have elapsed.
+  /// Is used to check how many number of rounds have elapsed.
 
   void finishRounds() {
     if (round >= 10) {
@@ -458,9 +471,9 @@ class _ClassicGameState extends State<ClassicGame> {
         false;
   }
 
-  // Function to navigate to the home screen
+  /// Function to navigate to the home screen
   void _navigateToHomeScreen() {
-    // You can use Navigator to navigate to the home screen or any other desired screen.
+    /// You can use Navigator to navigate to the home screen or any other desired screen.
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -469,7 +482,7 @@ class _ClassicGameState extends State<ClassicGame> {
     );
   }
 
-  // Function that shows the game over dialog.
+  /// Function that shows the game over dialog.
   void _showGameOverDialog() {
     bool highscore =
         (score >= loggedInUser.highestScoreClassic!) ? true : false;
@@ -564,6 +577,8 @@ class _ClassicGameState extends State<ClassicGame> {
     );
   }
 
+  /// How to play Dialog Option.
+
   void _showHowToPlay() {
     showDialog(
       context: context,
@@ -605,7 +620,7 @@ class _ClassicGameState extends State<ClassicGame> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    // Close the dialog
+                    /// Close the dialog
                     Navigator.pop(context);
 
                     // You can implement logic to restart the game here.
@@ -634,7 +649,9 @@ class _ClassicGameState extends State<ClassicGame> {
     QuestionAnswer? newQuestion = await getData();
     setState(() {
       questionAns = newQuestion;
-      ansController.clear(); // Clear the input field
+      ansController.clear();
+
+      /// Clear the input field
       round++;
     });
     finishRounds();

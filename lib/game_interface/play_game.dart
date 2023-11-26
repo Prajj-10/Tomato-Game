@@ -14,8 +14,9 @@ import '../../models/user_model.dart';
 import '../../navigation_handler/navigation.dart';
 import '../login/login_page.dart';
 
+/// The main screen for playing the Tomato Game.
 class PlayGame extends StatefulWidget {
-  const PlayGame({super.key});
+  const PlayGame({Key? key});
 
   @override
   State<PlayGame> createState() => _PlayGameState();
@@ -36,6 +37,7 @@ class _PlayGameState extends State<PlayGame> {
     loggedIn();
   }
 
+  /// Handles the back button to prompt the user before exiting the app.
   Future<bool> _onWillPop() async {
     return (await showDialog(
           barrierDismissible: false,
@@ -56,7 +58,6 @@ class _PlayGameState extends State<PlayGame> {
                   style: TextStyle(
                       fontSize: 20,
                       fontFamily: 'Electronic Highway Sign',
-                      //color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
                 content: new Text(
@@ -64,7 +65,6 @@ class _PlayGameState extends State<PlayGame> {
                   style: TextStyle(
                       fontSize: 16,
                       fontFamily: 'Electronic Highway Sign',
-                      //color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
                 actions: <Widget>[
@@ -75,7 +75,6 @@ class _PlayGameState extends State<PlayGame> {
                       style: TextStyle(
                           fontSize: 20,
                           fontFamily: 'Electronic Highway Sign',
-                          //color: Color(0xF29F9F).withOpacity(0.9),
                           fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -86,7 +85,6 @@ class _PlayGameState extends State<PlayGame> {
                       style: TextStyle(
                           fontSize: 20,
                           fontFamily: 'Electronic Highway Sign',
-                          //color: Color(0xF29F9F).withOpacity(0.9),
                           fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -253,7 +251,7 @@ class _PlayGameState extends State<PlayGame> {
     );
   }
 
-  // Returns a bool value if the user is logged in or not.
+  /// Returns a bool value if the user is logged in or not.
   bool loggedIn() {
     if (name != null) {
       return true;
@@ -262,7 +260,7 @@ class _PlayGameState extends State<PlayGame> {
     }
   }
 
-  // Gets details from the Firebase if the user is already logged in.
+  /// Gets details from the Firebase if the user is already logged in.
   void getDetails() async {
     var userDetails = await FirebaseFirestore.instance
         .collection('users')
@@ -274,6 +272,7 @@ class _PlayGameState extends State<PlayGame> {
     });
   }
 
+  /// Shows a dialog to confirm the logout action.
   void _showLogoutDialog() {
     if (name != null) {
       showDialog(
@@ -353,6 +352,7 @@ class _PlayGameState extends State<PlayGame> {
     }
   }
 
+  /// Logs out the user.
   Future<void> logout(BuildContext context) async {
     final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
     print(provider.googleSignIn.currentUser);

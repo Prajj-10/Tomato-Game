@@ -13,6 +13,7 @@ import '../models/api_model.dart';
 import '../models/user_model.dart';
 import '../navigation_handler/navigation.dart';
 
+/// The screen for the Time Challenge Game mode.
 class TimeChallengeGame extends StatefulWidget {
   const TimeChallengeGame({super.key});
 
@@ -20,35 +21,47 @@ class TimeChallengeGame extends StatefulWidget {
   State<TimeChallengeGame> createState() => _TimeChallengeGameState();
 }
 
+/// The state of the [TimeChallengeGame] widget.
 class _TimeChallengeGameState extends State<TimeChallengeGame> {
-  int score = 0; // Initialize the score
-  late Timer _gameTimer;
-  int _timeLeft = 120; // Set the initial time in seconds
+  /// The current score of the player.
+  int score = 0;
 
+  /// Timer for the main game.
+  late Timer _gameTimer;
+
+  /// The time left in seconds for the game.
+  int _timeLeft = 120;
+
+  /// Timer for the countdown before the game starts.
   late Timer _countdownTimer;
+
+  /// The countdown value before the game starts.
   int _countdown = 3;
 
+  /// GlobalKey for form validation.
   final _formKey = GlobalKey<FormState>();
 
-  // User Model to map data of the User.
+  /// User Model for data extraction.
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
 
-  // Google Sign In object.
+  /// Google Sign-In object.
   final googleSignIn = GoogleSignIn();
 
-  // late varible which gets initialized later
+  /// Future variable to get data from the API.
   late Future<QuestionAnswer?>? _futurequestion;
 
-  // Answer controller to receive answer
+  /// Controller for the answer input field.
   TextEditingController ansController = TextEditingController();
 
+  /// List to store the fetched question and answer.
   List<QuestionAnswer> questionAnswer = [];
 
   @override
   void initState() {
-    // Initializes Firebase and gets data in loggedinUser from user.
     super.initState();
+
+    /// Initialize Firebase and get data for the logged-in user.
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
@@ -64,14 +77,14 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     initfuture();
   }
 
+  /// Initialize the future for fetching data from the API.
   initfuture() {
-    // As asyncs can't be called in init, this is a workaround.
     _futurequestion = getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Phone Size
+    // Get the phone size.
     var size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -96,196 +109,202 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
               color: Colors.red,
             ),
           ],
-          /*leading: IconButton(
-              color: Colors.red,
-              onPressed: () {
-                logout(context);
-              },
-              icon: const Icon(Icons.logout_outlined),
-            )*/
         ),
-        body: //future builder
-            Container(
-                height: size.height,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  colors: [
-                    // Gradient of the page.
-                    const Color(0xF29F9F).withOpacity(0.9),
-                    const Color(0xFAFAFA).withOpacity(1.0),
-                  ],
-                  // Gradient Pattern
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                )),
-                child: Stack(children: [
-                  FutureBuilder<QuestionAnswer?>(
-                      future: _futurequestion,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuestionAnswer?> snapshot) {
-                        // Managing Data depending on what is received from the API.
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.none:
-                            return Container(
-                              child: Text(
-                                "Could not establish Connection.",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Electronic Highway Sign'),
-                              ),
-                            ); // error//
-                          case ConnectionState.waiting: //loading
-                            return const Center(
-                                child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Center(child: CircularProgressIndicator()),
-                            ));
-                          case ConnectionState.done:
-                            if (snapshot.data == null) {
-                              return Center(
+        body: Container(
+          height: size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                // Gradient of the page.
+                const Color(0xF29F9F).withOpacity(0.9),
+                const Color(0xFAFAFA).withOpacity(1.0),
+              ],
+              // Gradient Pattern
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Stack(
+            children: [
+              FutureBuilder<QuestionAnswer?>(
+                future: _futurequestion,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuestionAnswer?> snapshot) {
+                  // Managing Data depending on what is received from the API.
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return Container(
+                        child: Text(
+                          "Could not establish Connection.",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Electronic Highway Sign'),
+                        ),
+                      ); // error//
+                    case ConnectionState.waiting: //loading
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      );
+                    case ConnectionState.done:
+                      if (snapshot.data == null) {
+                        return Center(
+                          child: const Text(
+                            "Could not fetch data from the API.",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Electronic Highway Sign'),
+                          ),
+                        ); // no data
+                      } else {
+                        //UI if the data is present
+                        return Padding(
+                          padding: const EdgeInsets.all(36.0),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        "Time: $_timeLeft seconds",
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Electronic Highway Sign',
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 63,
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Text(
+                                        "Score : $score",
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Electronic Highway Sign',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 80,
+                                ),
+                                Align(
+                                  alignment: Alignment.center,
                                   child: const Text(
-                                "Could not fetch data from the API.",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Electronic Highway Sign'),
-                              )); // no data
-                            } else {
-                              //UI if the data is present
-                              return Padding(
-                                padding: const EdgeInsets.all(36.0),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Time: $_timeLeft seconds",
-                                              style: const TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily:
-                                                      'Electronic Highway Sign'),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 63,
-                                          ),
-                                          Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              "Score : $score",
-                                              //textAlign: TextAlign.start,
-                                              style: const TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily:
-                                                      'Electronic Highway Sign'),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 80,
-                                      ),
-                                      Align(
-                                        alignment: Alignment.center,
-                                        child: const Text(
-                                          "Enter the correct number: ",
-                                          //textAlign: TextAlign.,
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily:
-                                                  'Electronic Highway Sign'),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Center(
-                                        child: Image.network(
-                                          questionAns!.question,
-                                          width: 400,
-                                          height: 250,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Center(
-                                          child: Form(
-                                        key: _formKey,
-                                        child: TextFormField(
-                                          controller: ansController,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            hintText: "Enter a value",
-                                            hintStyle: TextStyle(
-                                                fontFamily:
-                                                    'Electronic Highway Sign',
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          keyboardType: TextInputType.number,
-                                          onChanged: (value) {
-                                            int? enteredValue =
-                                                int.tryParse(value);
-                                            if (enteredValue != null) {
-                                              ansController.text =
-                                                  enteredValue.toString();
-                                            }
-                                          },
-                                          style: const TextStyle(fontSize: 15),
-                                        ),
-                                      )),
-                                      const SizedBox(
-                                        height: 25,
-                                      ),
-                                      Center(
-                                          child: CustomButton(
-                                        onTap: () {
-                                          checkAnswer(); // Function to check ans being called
-                                        },
-                                        text: 'Enter',
-                                      )),
-                                    ],
+                                    "Enter the correct number: ",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Electronic Highway Sign',
+                                    ),
                                   ),
                                 ),
-                              );
-                            }
-                          default:
-                            return Container(); //error page
-                        }
-                      }),
-                  _countdown == 0
-                      ? Container()
-                      : Positioned(
-                          top: 0,
-                          left: 0,
-                          child: GestureDetector(
-                            onTap: () {
-                              //do nothing
-                            },
-                            child: Container(
-                                height: size.height,
-                                width: size.width,
-                                color: Color(0xF29F9F).withOpacity(0.95),
-                                child: Center(
-                                    child: Text(_countdown.toString(),
-                                        style: TextStyle(fontSize: 60)))),
-                          ))
-                ])),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Center(
+                                  child: Image.network(
+                                    questionAns!.question,
+                                    width: 400,
+                                    height: 250,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Center(
+                                  child: Form(
+                                    key: _formKey,
+                                    child: TextFormField(
+                                      controller: ansController,
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: "Enter a value",
+                                        hintStyle: TextStyle(
+                                          fontFamily: 'Electronic Highway Sign',
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        int? enteredValue = int.tryParse(value);
+                                        if (enteredValue != null) {
+                                          ansController.text =
+                                              enteredValue.toString();
+                                        }
+                                      },
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 25,
+                                ),
+                                Center(
+                                  child: CustomButton(
+                                    onTap: () {
+                                      checkAnswer(); // Function to check ans being called
+                                    },
+                                    text: 'Enter',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    default:
+                      return Container(); //error page
+                  }
+                },
+              ),
+              _countdown == 0
+                  ? Container()
+                  : Positioned(
+                      top: 0,
+                      left: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          //do nothing
+                        },
+                        child: Container(
+                          height: size.height,
+                          width: size.width,
+                          color: Color(0xF29F9F).withOpacity(0.95),
+                          child: Center(
+                            child: Text(
+                              _countdown.toString(),
+                              style: TextStyle(fontSize: 60),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  // The main function that is being called to get data from API.
+  /// The main function that is being called to get data from API.
   QuestionAnswer? questionAns;
 
+  /// Fetches question and answer data from the API.
+  ///
+  /// Returns a [QuestionAnswer] object if successful, otherwise returns null.
   Future<QuestionAnswer?> getData() async {
     try {
       String url = "https://marcconrad.com/uob/tomato/api.php";
@@ -297,7 +316,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     }
   }
 
-  // Starts the game timer and shows the Game over dialog when the time is over.
+  /// Starts the game timer and shows the Game over dialog when the time is over.
   void _startGameTimer() {
     _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -312,7 +331,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     });
   }
 
-  // Logs the user out from their account.
+  /// Logs the user out from their account.
   Future<void> logout(BuildContext context) async {
     final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
     print(provider.googleSignIn.currentUser);
@@ -339,7 +358,10 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         MaterialPageRoute(builder: (context) => const Navigation()));
   }
 
-  // Checks for answer if it's correct or not.
+  /// Checks for answer if it's correct or not.
+  ///
+  /// If the entered value matches the correct solution, updates the score
+  /// and fetches a new question. Otherwise, updates the time and score accordingly.
   Future<void> checkAnswer() async {
     int value = int.tryParse(ansController.text) ?? 0; // Default sets to 0.
     if (value == questionAns!.solution) {
@@ -374,9 +396,8 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     }
   }
 
-  // Function to restart the game
+  /// Restarts the game by resetting the score, timer, and other relevant data.
   void _restartGame() {
-    // Reset the game state, including score, timer, and other relevant data.
     setState(() {
       score = 0;
       _timeLeft = 120; // Reset the timer to the initial time
@@ -385,7 +406,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     _startGameTimer();
   }
 
-  // Function to navigate to the home screen
+  /// Navigates to the home screen.
   void _navigateToHomeScreen() {
     // Navigator to navigate to the home screen or any other desired screen.
     Navigator.pushReplacement(
@@ -394,6 +415,9 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     );
   }
 
+  /// Handles the back button press and shows a confirmation dialog.
+  ///
+  /// Returns true if the user confirms to exit, otherwise returns false.
   Future<bool> _onWillPop() async {
     return (await showDialog(
           barrierDismissible: false,
@@ -456,6 +480,10 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
         false;
   }
 
+  /// Checks if the current score is a new high score.
+  ///
+  /// Returns true if the score is greater than or equal to the user's highest score,
+  /// otherwise returns false.
   bool highscore() {
     if (score >= loggedInUser.highestScore!) {
       return true;
@@ -464,7 +492,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     }
   }
 
-  // Shows the game over dialog.
+  /// Shows the game over dialog with the final score.
   void _showGameOverDialog() {
     // Ternary Operator Magic
     bool highscore = (score >= loggedInUser.highestScore!) ? true : false;
@@ -561,6 +589,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     );
   }
 
+  /// Shows the how-to-play dialog with game instructions.
   void _showHowToPlay() {
     showDialog(
       context: context,
@@ -627,6 +656,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     );
   }
 
+  /// Skips the current question and deducts 5 seconds from the timer.
   Future<void> _skipQuestion() async {
     QuestionAnswer? newQuestion = await getData();
     setState(() {
@@ -636,6 +666,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     });
   }
 
+  /// Starts the countdown before the game begins.
   void startCountdown() {
     const oneSecond = Duration(seconds: 1);
     _countdownTimer = Timer.periodic(oneSecond, (timer) {
@@ -651,6 +682,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     });
   }
 
+  /// Saves the user's score to Firebase Firestore.
   Future<void> _saveScore() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     FirebaseFirestore.instance
@@ -674,9 +706,9 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
     }
   }
 
+  /// Disposes of the timers when the widget is disposed to avoid memory leaks.
   @override
   void dispose() {
-    // Cancel the timers when the widget is disposed to avoid memory leaks
     _countdownTimer.cancel();
     _gameTimer.cancel();
     super.dispose();

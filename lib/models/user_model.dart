@@ -1,21 +1,34 @@
+/// Represents a user model with various attributes.
 class UserModel {
+  /// The unique identifier for the user.
   String? uid;
+
+  /// The name of the user.
   String? name;
+
+  /// The email address of the user.
   String? email;
+
+  /// The password of the user.
   String? password;
+
+  /// The highest score of the user in a general game context.
   int? highestScore;
+
+  /// The highest score of the user in a classic game context.
   int? highestScoreClassic;
 
-  UserModel(
-      {this.uid,
-      this.name,
-      this.email,
-      this.password,
-      this.highestScore,
-      this.highestScoreClassic});
+  /// Constructor for creating a [UserModel] instance.
+  UserModel({
+    this.uid,
+    this.name,
+    this.email,
+    this.password,
+    this.highestScore,
+    this.highestScoreClassic,
+  });
 
-  // receiving data from the server
-
+  /// Factory constructor for creating a [UserModel] instance from a map.
   factory UserModel.fromMap(map) {
     return UserModel(
       uid: map['uid'],
@@ -27,8 +40,7 @@ class UserModel {
     );
   }
 
-  // sending data to server
-
+  /// Converts the [UserModel] object to a map for sending data to the server.
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

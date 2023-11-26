@@ -2,13 +2,19 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../../Custom_Widgets/custom_button.dart';
+import '../custom_widgets/custom_loading.dart';
 import '../login/login_page.dart';
 import '../../models/user_model.dart';
 
+/// The [EmailPasswordSignup] widget is responsible for handling user sign-up
+/// using email and password. It includes form validation and Firebase
+/// authentication.
+
 class EmailPasswordSignup extends StatefulWidget {
-  // static String routeName = '/signup.dart';   // The routes are created at main.dart to route the pages properly.
+  /// Default constructor for the [EmailPasswordSignup] widget.
   const EmailPasswordSignup({Key? key}) : super(key: key);
 
   @override
@@ -41,7 +47,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
     passwordVisible = false;
   }
 
-  // Name Field
+  /// Builds the [TextFormField] for the user's name.
   nameField() {
     return TextFormField(
         autofocus: false,
@@ -71,7 +77,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
         ));
   }
 
-  // Email Field
+  /// Builds the [TextFormField] for the user's email.
   emailField() {
     return TextFormField(
         autofocus: false,
@@ -101,7 +107,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
         ));
   }
 
-  // Password Field
+  /// Builds the [TextFormField] for the user's password.
   passwordField() {
     return TextFormField(
         autofocus: false,
@@ -146,7 +152,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
         ));
   }
 
-  // Confirm Password Field
+  /// Builds the [TextFormField] for confirming the user's password.
   confirmPasswordField() {
     return TextFormField(
         autofocus: false,
@@ -259,12 +265,21 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
     );
   }
 
-  // Function to Sign up in Firebase.
+  /// Function to sign up the user using Firebase authentication.
   void signUp(String email, String password) async {
     if (_formKey.currentState!.validate()) {
+      SmartDialog.showLoading(
+        msg: "Logging In...",
+        builder: (_) => CustomLoading(type: 2),
+        maskColor: Color(0xF29F9F).withOpacity(1.0),
+        animationType: SmartAnimationType.scale,
+        //msg: "Loading",
+        backDismiss: false,
+      );
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {
+                SmartDialog.dismiss(),
                 postDetailsToFireStore(),
               })
           .catchError((e) {
@@ -280,7 +295,7 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
     }
   }
 
-  // Inserts the details entered in the Firebase Fire store.
+  /// Inserts the user details into Firebase Firestore after successful sign-up.
   postDetailsToFireStore() async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
@@ -312,9 +327,12 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup>
   }
 }
 
+/// A mixin providing input validation methods.
 mixin InputValidationMixin {
+  /// Validates if the given name is at least 6 characters long and not empty.
   bool isNameValid(String name) => name.length >= 6 && name.isNotEmpty;
 
+  /// Validates if the password meets the specified criteria.
   bool passwordStructure(String value) {
     String pattern =
         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
@@ -322,6 +340,7 @@ mixin InputValidationMixin {
     return regExp.hasMatch(value);
   }
 
+  /// Validates if the given email has a valid format.
   bool isEmailValid(String email) {
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
