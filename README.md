@@ -1,6 +1,7 @@
 # Tomato Game 
 
-![Tomato Icon](./assets/images/tomato-main.png)
+
+<img src="./assets/images/tomato-main.png" alt="Tomato Game Icon" width="300" height="300">
 
 
 Tomato Game is a mobile application developed as a project for the University of Bedfordshire. It's a fun and engaging game that provides users with different game modes to enjoy.
@@ -21,11 +22,11 @@ To get started with the Tomato Game, follow these steps:
 
 2.) Install Dependencies
 
-flutter pub get
+   flutter pub get
 
 3.) Run the App
 
-flutter run
+   flutter run
 
 ## Requirements
 
