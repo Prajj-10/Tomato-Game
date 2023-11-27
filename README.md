@@ -30,12 +30,12 @@ To get started with the Tomato Game, follow these steps:
 
 ## Requirements
 
-1.) Flutter SDK
-2.) Dart SDK
-3.) Firebase Account (for authentication and data storage)
+1.) Flutter SDK 
+2.) Dart SDK 
+3.) Firebase Account (for authentication and data storage) 
 
 ## Project Structure
 
-1.) lib/: Contains the main Dart code for the application.
-2.) assets/: Includes static assets like images and GIFs.
-3.) test/: Unit and widget tests.
+1.) lib/: Contains the main Dart code for the application. 
+2.) assets/: Includes static assets like images and GIFs. 
+3.) test/: Unit and widget tests. 
