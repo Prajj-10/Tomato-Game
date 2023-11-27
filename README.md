@@ -1,4 +1,7 @@
-# Tomato Game
+# Tomato Game 
+
+![Tomato Icon](./assets/images/tomato-main.png)
+
 
 Tomato Game is a mobile application developed as a project for the University of Bedfordshire. It's a fun and engaging game that provides users with different game modes to enjoy.
 
