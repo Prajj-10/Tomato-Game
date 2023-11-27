@@ -22,9 +22,14 @@ class PlayGame extends StatefulWidget {
   State<PlayGame> createState() => _PlayGameState();
 }
 
-class _PlayGameState extends State<PlayGame> {
+class _PlayGameState extends State<PlayGame> with TickerProviderStateMixin {
   // To get name from Firebase Firestore.
   var name;
+
+  late final AnimationController _animation = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  )..repeat(reverse: false);
 
   // User Model to map data.
   User? user = FirebaseAuth.instance.currentUser;
@@ -133,18 +138,16 @@ class _PlayGameState extends State<PlayGame> {
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(
-                  height: 25,
-                ),
                 SizedBox(
-                  height: 200,
-                  child: Image.asset(
-                    "assets/images/tomato-spin.gif",
-                    fit: BoxFit.contain,
+                  height: 230,
+                  width: 400,
+                  child: RotationTransition(
+                    turns: _animation,
+                    child: Image.asset(
+                      "assets/images/tomato-main.png",
+                      fit: BoxFit.contain,
+                    ),
                   ), // Image location
-                ),
-                const SizedBox(
-                  height: 30,
                 ),
                 Center(
                   child: loggedIn
@@ -408,5 +411,12 @@ class _PlayGameState extends State<PlayGame> {
           MaterialPageRoute(builder: (context) => const Navigation()),
           (Route<dynamic> route) => false);
     }
+  }
+
+  // dispose the animation controller
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
   }
 }

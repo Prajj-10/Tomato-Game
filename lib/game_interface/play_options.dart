@@ -15,9 +15,15 @@ class PlayOptions extends StatefulWidget {
   State<PlayOptions> createState() => _PlayOptionsState();
 }
 
-class _PlayOptionsState extends State<PlayOptions> {
+class _PlayOptionsState extends State<PlayOptions>
+    with TickerProviderStateMixin {
   // Name is only created to make sure if the user is still logged in or not.
   var name;
+
+  late final AnimationController _animation = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  )..repeat(reverse: false);
 
   // User Model to map data from Fire store.
   User? user = FirebaseAuth.instance.currentUser;
@@ -62,18 +68,19 @@ class _PlayOptionsState extends State<PlayOptions> {
                     color: Colors.black,
                     fontWeight: FontWeight.bold),
               ),
-              const SizedBox(
-                height: 25,
-              ),
               SizedBox(
-                height: 200,
-                child: Image.asset(
-                  "assets/images/tomato-spin.gif",
-                  fit: BoxFit.contain,
+                height: 230,
+                width: 400,
+                child: RotationTransition(
+                  turns: _animation,
+                  child: Image.asset(
+                    "assets/images/tomato-main.png",
+                    fit: BoxFit.contain,
+                  ),
                 ), // Image location
               ),
               const SizedBox(
-                height: 30,
+                height: 10,
               ),
               CustomButton(
                 text: 'Classic',
@@ -129,5 +136,12 @@ class _PlayOptionsState extends State<PlayOptions> {
     setState(() {
       name = userDetails.data()!['name'];
     });
+  }
+
+  // dispose the animation controller
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
   }
 }

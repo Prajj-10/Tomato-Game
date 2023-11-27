@@ -18,13 +18,19 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with InputValidationMixin, TickerProviderStateMixin {
   // Form Key to collect data and for validation.
   final _formKey = GlobalKey<FormState>();
 
   // Text Editing Controllers for TextFormFields.
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  late final AnimationController _animation = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  )..repeat(reverse: false);
 
   // boolean variable for hide and un-hide password.
   late bool passwordVisible;
@@ -152,18 +158,20 @@ class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
                         color: Colors.black,
                         fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(
-                    height: 25,
-                  ),
+
                   SizedBox(
-                    height: 200,
-                    child: Image.asset(
-                      "assets/images/tomato-spin.gif",
-                      fit: BoxFit.contain,
+                    height: 230,
+                    width: 400,
+                    child: RotationTransition(
+                      turns: _animation,
+                      child: Image.asset(
+                        "assets/images/tomato-main.png",
+                        fit: BoxFit.contain,
+                      ),
                     ), // Image location
                   ),
                   const SizedBox(
-                    height: 45,
+                    height: 10,
                   ),
                   emailField(),
                   const SizedBox(
@@ -322,6 +330,13 @@ class _LoginScreenState extends State<LoginScreen> with InputValidationMixin {
         // print(error.code);
       }
     }
+  }
+
+  // dispose the animation controller
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
   }
 }
 
