@@ -9,12 +9,12 @@ The main objective of the project was to focus on four software engineering prin
 
 ## Game Screenshots:
 
-<div style="display: flex; justify-content: space-evenly;">
+  <p align="center">
   <img src="./Game ScreenShots/Play Game.jpg" alt="Main Screen" width="300" height="600">
   <img src="./Game ScreenShots/Select Options.jpg" alt="Select Option Screen" width="300" height="600">
   <img src="./Game ScreenShots/Login Page.jpg" alt="Login Page Screen" width="300" height="600">
   <img src="./Game ScreenShots/Wrong Answer Snackbar.jpg" alt="Login Page Screen" width="300" height="600">
-</div>
+  </p>
 
 
 ## Game Modes:
