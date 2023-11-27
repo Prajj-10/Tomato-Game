@@ -1,16 +1,41 @@
-# tomato_game
+# Tomato Game 
 
-A flutter project based on the API provided for the game.
+
+<img src="./assets/images/tomato-main.png" alt="Tomato Game Icon" width="300" height="300">
+
+
+Tomato Game is a mobile application developed as a project for the University of Bedfordshire. It's a fun and engaging game that provides users with different game modes to enjoy.
+
+## Features
+
+- **Classic Mode**: Play the classic version of the game and aim for the highest score.
+- **Time Challenge Mode**: Test your skills in a time-limited challenge.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To get started with the Tomato Game, follow these steps:
 
-A few resources to get you started if this is your first Flutter project:
+1. Clone the repository:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+   ```bash
+   git clone https://github.com/Prajj-10/tomato-game.git
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2.) Install Dependencies
+
+   flutter pub get
+
+3.) Run the App
+
+   flutter run
+
+## Requirements
+
+1.) Flutter SDK 
+2.) Dart SDK 
+3.) Firebase Account (for authentication and data storage) 
+
+## Project Structure
+
+1.) lib/: Contains the main Dart code for the application. 
+2.) assets/: Includes static assets like images and GIFs. 
+3.) test/: Unit and widget tests. 
