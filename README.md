@@ -37,8 +37,16 @@ The rules (Classic and Time Challenge) are explained in the screenshot and is al
 
 
 ## Download the Game :
-You can download the android apk of the game <a href="https://drive.google.com/file/d/15Np2xCDDJcSrXzxAynKYyDikK2_p-bE2/view?usp=drive_link"> here </a>
+You can download the android apk of the game <a href= "https://drive.google.com/file/d/15Np2xCDDJcSrXzxAynKYyDikK2_p-bE2/view?usp=drive_link"> here </a>
 <br>I hope you Enjoy the game ! 
+
+## Support Documentation:
+
+You can find the support documentation <a href= "https://drive.google.com/file/d/1KdWR3YYiRkpBSaJTVSqBG0OWlKUYepP0/view?usp=sharing"> here </a>
+
+## Code Documentation:
+
+You can visit the code documentation site <a href="https://prajj-10.github.io/"> here </a>
 
 ## Running the Code:
 
