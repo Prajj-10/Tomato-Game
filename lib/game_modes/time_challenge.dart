@@ -310,6 +310,7 @@ class _TimeChallengeGameState extends State<TimeChallengeGame> {
       String url = "https://marcconrad.com/uob/tomato/api.php";
       http.Response res = await http.get(Uri.parse(url));
       questionAns = QuestionAnswer.fromJson(json.decode(res.body));
+      print(questionAns?.solution);
       return questionAns;
     } catch (e) {
       return null;

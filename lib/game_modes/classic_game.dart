@@ -313,6 +313,7 @@ class _ClassicGameState extends State<ClassicGame> {
       String url = "https://marcconrad.com/uob/tomato/api.php";
       http.Response res = await http.get(Uri.parse(url));
       questionAns = QuestionAnswer.fromJson(json.decode(res.body));
+      print(questionAns?.solution);
       return questionAns;
     } catch (e) {
       return null;
